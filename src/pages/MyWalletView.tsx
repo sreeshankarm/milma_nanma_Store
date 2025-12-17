@@ -31,7 +31,7 @@ export const MyWalletView: React.FC = () => {
 //   );
 
   return (
-    <div className="min-h-screen  dark:bg-[#0B1220] py-8">
+    <div className="min-h-screen  py-8">
       <div className="max-w-6xl mx-auto px-6 space-y-8 animate-fade-in">
 
         {/* ===== Wallet Summary ===== */}
