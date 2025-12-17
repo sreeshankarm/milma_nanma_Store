@@ -68,7 +68,7 @@ export default function FeedbackCenter() {
   };
 
   return (
-    <div className="p-6 pb-24 space-y-6">
+    <div className="max-w-xl mx-auto p-6 pb-24 space-y-6 ">
       {/* ---------- HEADER ---------- */}
       <div className="flex items-center justify-between">
         <div>

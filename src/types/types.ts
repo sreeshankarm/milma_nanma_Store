@@ -161,3 +161,35 @@ export interface Complaint {
   createdAt: Date;
   updatedAt: Date;
 }
+
+
+// ---------------------------
+// USER PROFILE
+// ---------------------------
+export interface GeoLocation {
+  lat: number;
+  lng: number;
+  accuracy: number;
+}
+
+export interface UserProfile {
+  id: string;
+  name: string;
+  role: string;
+  regId: string;
+  phone: string;
+  email: string;
+  address: string;
+  storePhotos: string[];
+  geoLocation?: GeoLocation;
+}
+
+// ---------------------------
+// CONTACT DETAILS FORM STATE
+// ---------------------------
+export interface ContactDetailsFormState {
+  phone: string;
+  email: string;
+  address: string;
+  storePhotos: string[];
+}

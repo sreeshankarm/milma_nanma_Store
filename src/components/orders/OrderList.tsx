@@ -28,7 +28,7 @@ export default function OrderList({
     );
 
   return (
-    <div className="space-y-4 overflow-y-auto flex-1">
+    <div className="overflow-y-auto flex-1 grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
       {orders.map((o) => (
         <OrderCard
           key={o.id}

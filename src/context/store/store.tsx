@@ -6,6 +6,8 @@ import type {
   OrderItem,
   ReturnItem,
   DistributorContact,
+  UserProfile,
+  GeoLocation
 } from "../../types/types";
 import { OrderStatus } from "../../types/types";
 
@@ -139,6 +141,24 @@ const INITIAL_DISTRIBUTORS: DistributorContact[] = [
   },
 ];
 
+// --- PROFILE ---
+const INITIAL_PROFILE: UserProfile = {
+  id: "USR-001",
+  name: "Nanma Store",
+  role: "Retailer",
+  regId: "MILMA-1023",
+  phone: "9876543210",
+  email: "shankar@example.com",
+  address: "Kochi, Kerala",
+  storePhotos: [],
+  geoLocation: {
+    lat: 9.9699,
+    lng: 76.2999,
+    accuracy: 50,
+  },
+};
+
+
 export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, setState] = useState<AppState>({
     balance: 2000,
@@ -147,6 +167,17 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
   });
 
   const [orders, setOrders] = useState<Order[]>(INITIAL_ORDERS);
+
+  const [profile, setProfile] = useState<UserProfile>(INITIAL_PROFILE);
+
+const updateProfile = (data: Partial<UserProfile>) => {
+  setProfile((prev) => ({ ...prev, ...data }));
+};
+
+const updateGeoLocation = (geo: GeoLocation) => {
+  setProfile((prev) => ({ ...prev, geoLocation: geo }));
+};
+
 
   // return UI
   const [selectedOrderIdForReturn, setSelectedOrderIdForReturn] = useState<
@@ -299,6 +330,9 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
         returnRequests,
         createReturnRequest,
         getDistributors,
+          profile,
+    updateProfile,
+    updateGeoLocation,
       }}
     >
       {children}

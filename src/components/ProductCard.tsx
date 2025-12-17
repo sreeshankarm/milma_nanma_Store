@@ -6,7 +6,7 @@ interface Props {
   onClick?: () => void;
 }
 
-export default function ProductCard({ product, onClick }: Props) {
+export default function ProductCard({ product,  onClick }: Props) {
   return (
     <div className="relative border border-gray-200 bg-white rounded-2xl shadow p-4 pb-5 hover:shadow-lg transition-all duration-300 max-w-[300px]">
       {/* Top-left Number Tag */}

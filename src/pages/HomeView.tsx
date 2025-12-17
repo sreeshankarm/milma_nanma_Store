@@ -11,11 +11,14 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { TopUpModal } from "../components/TopUpModal";
 
 export const HomeView: React.FC = () => {
   const { balance, getProducts, addToCart } = useStore(); // remove undefined props
   const [searchTerm, setSearchTerm] = useState("");
   const [selected, setSelected] = useState<Product | null>(null);
+    const [showTopUp, setShowTopUp] = useState(false);
+
 
   const filtered = getProducts().filter((p: Product) =>
     p.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -28,9 +31,8 @@ export const HomeView: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <WalletCard
           balance={balance}
-          onTopUp={() => {
-            /* handle top-up */
-          }}
+          onTopUp={() => setShowTopUp(true)}
+
         />
 
         <QuickActions
@@ -41,7 +43,7 @@ export const HomeView: React.FC = () => {
       </div>
 
       {/* Complaint & Feedback Banner */}
-      <FeedbackBanner onClick={() => {}} />
+      <FeedbackBanner onClick={() =>navigate("/FeedbackComplaints")} />
 
       {/* Search Bar */}
       <SearchBar value={searchTerm} onChange={setSearchTerm} />
@@ -63,6 +65,11 @@ export const HomeView: React.FC = () => {
           ))}
         </div>
       )}
+
+        <TopUpModal
+        open={showTopUp}
+        onClose={() => setShowTopUp(false)}
+      />
 
       {selected && (
         <ProductModal

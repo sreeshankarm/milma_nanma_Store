@@ -1,12 +1,12 @@
 import { useState } from "react";
-import {  Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import HomeView from "../pages/HomeView";
 import CartView from "../pages/CartView";
 import { useStore } from "../context/store/store";
 import type { CartItem } from "../types/types";
-import { Suspense } from "react";
+import { Suspense} from "react";
 import Loader from "../components/Loader";
 import { useRouteLoader } from "../Hooks/useRouteLoader";
 import PageNotFound from "../pages/PageNotFound";
@@ -14,6 +14,8 @@ import MyOrdersView from "../pages/MyOrdersView";
 import ReturnRequestsView from "../pages/ReturnRequestsView";
 import DistributorDirectory from "../pages/DistributorDirectory";
 import FeedbackCenter from "../pages/FeedbackCenter";
+import { MyWalletView } from "../pages/MyWalletView";
+import { MyProfileView } from "../pages/MyProfileView";
 
 // Lazy imports
 // const HomeView = lazy(() => import("../pages/HomeView"));
@@ -59,6 +61,9 @@ export default function AppRouter() {
                 <Route path="/DamagesReturn" element={<ReturnRequestsView />} />
                 <Route path="/Mydistributors" element={<DistributorDirectory/>} />
                 <Route path="/FeedbackComplaints" element={<FeedbackCenter/>} />
+                <Route path="/wallet" element={<MyWalletView/>} />
+                <Route path="/profile" element={<MyProfileView/>} />
+
 
 
                 <Route path="*" element={<PageNotFound />} />
