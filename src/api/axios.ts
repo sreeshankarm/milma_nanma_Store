@@ -3,8 +3,8 @@ import { token } from "../utils/token";
 
 const api = axios.create({
 //   baseURL: "https://nanmastagingapi.milma.in",
-  // baseURL: "/api", 
-    baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: "/api", 
+    // baseURL: import.meta.env.VITE_API_BASE_URL,
 
 
   headers: {
