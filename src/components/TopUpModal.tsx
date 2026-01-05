@@ -35,7 +35,7 @@ export const TopUpModal: React.FC<Props> = ({ open, onClose }) => {
       />
 
       {/* Modal */}
-      <div className="relative bg-white dark:bg-[#0B1220] w-full md:max-w-md rounded-t-3xl md:rounded-3xl p-6 animate-slide-up">
+      <div className="relative bg-white  w-full md:max-w-md rounded-t-3xl md:rounded-3xl p-6 animate-slide-up">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold">Top Up Wallet</h2>
