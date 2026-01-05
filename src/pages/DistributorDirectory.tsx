@@ -11,13 +11,13 @@ const DistributorDirectory: React.FC = () => {
     <div className="p-4 pb-24 space-y-6 animate-fade-in">
       {/* Header */}
       <div>
-        <p className="text-xs uppercase tracking-[0.25em] text-gray-500 dark:text-gray-400">
+        <p className="text-xs uppercase tracking-[0.25em] text-gray-500 ">
           Network
         </p>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <h2 className="text-2xl font-bold text-gray-900 ">
           My Distributors
         </h2>
-        <p className="text-sm text-gray-600 dark:text-gray-300">
+        <p className="text-sm text-gray-600 ">
           Find distributor contacts for Milma supply in your region.
         </p>
       </div>
@@ -34,10 +34,10 @@ const DistributorDirectory: React.FC = () => {
             <div className="flex justify-between gap-4">
               <div>
                 <p className="text-xs text-gray-400">{d.id}</p>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                <h3 className="text-lg font-semibold text-gray-900 ">
                   {d.name}
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                <p className="text-sm text-gray-600  flex items-center gap-2">
                   <MapPin size={14} className="text-red-500" />
                   {d.region}
                 </p>
@@ -52,7 +52,7 @@ const DistributorDirectory: React.FC = () => {
                       key={s}
                       className="text-[10px] px-2 py-1 rounded-full 
                                  bg-blue-50 text-blue-700 
-                                 dark:bg-blue-500/10 dark:text-blue-200"
+                                 "
                     >
                       {s}
                     </span>
@@ -67,7 +67,7 @@ const DistributorDirectory: React.FC = () => {
                 href={`tel:${d.phone}`}
                 className="flex items-center gap-2 px-3 py-2 rounded-xl
                            bg-green-50 text-green-700 border border-green-100
-                           dark:bg-green-500/10 dark:text-green-200 dark:border-green-500/20"
+                           "
               >
                 <Phone size={16} />
                 {d.phone}
@@ -77,7 +77,7 @@ const DistributorDirectory: React.FC = () => {
                 href={`mailto:${d.email}`}
                 className="flex items-center gap-2 px-3 py-2 rounded-xl
                            bg-blue-50 text-blue-700 border border-blue-100
-                           dark:bg-blue-500/10 dark:text-blue-200 dark:border-blue-500/20"
+                           "
               >
                 <Mail size={16} />
                 {d.email}
