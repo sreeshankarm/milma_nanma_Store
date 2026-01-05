@@ -1,55 +1,65 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useStore } from "../context/store/store";
 import WalletCard from "../components/WalletCard";
 import QuickActions from "../components/QuickActions";
 import FeedbackBanner from "../components/FeedbackBanner";
 import SearchBar from "../components/SearchBar";
 import ProductCard from "../components/ProductCard"; // ✅ default import
-import type { Product } from "../types/types";
+// import type { Productt } from "../typesss/typesss";
 import ProductModal from "../components/ProductModal";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { TopUpModal } from "../components/TopUpModal";
+import { useProduct } from "../context/product/useProduct";
+import type { Product } from "../types/product";
+import { useCart } from "../context/cart/useCart";
 
 export const HomeView: React.FC = () => {
-  const { balance, getProducts, addToCart } = useStore(); // remove undefined props
+  const { balance } = useStore();
+  const { products, loading, fetchProducts } = useProduct();
+  const { addToCart } = useCart();
+
   const [searchTerm, setSearchTerm] = useState("");
   const [selected, setSelected] = useState<Product | null>(null);
-    const [showTopUp, setShowTopUp] = useState(false);
+  const [showTopUp, setShowTopUp] = useState(false);
 
-
-  const filtered = getProducts().filter((p: Product) =>
-    p.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filtered = products.filter((p) =>
+    p.prod_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchProducts("2025-12-04");
+  }, []);
 
   return (
     <div className="p-4 pb-28 space-y-8 animate-fade-in">
       {/* Wallet / Balance Card */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <WalletCard
-          balance={balance}
-          onTopUp={() => setShowTopUp(true)}
-
-        />
+        <WalletCard balance={balance} onTopUp={() => setShowTopUp(true)} />
 
         <QuickActions
-         repeatLastOrder={() => navigate("/cart")}
-         goToReturns={() => navigate("/DamagesReturn")}
+          repeatLastOrder={() => navigate("/cart")}
+          goToReturns={() => navigate("/damagesReturn")}
           setActiveView={() => {}}
         />
       </div>
 
       {/* Complaint & Feedback Banner */}
-      <FeedbackBanner onClick={() =>navigate("/FeedbackComplaints")} />
+      <FeedbackBanner onClick={() => navigate("/FeedbackComplaints")} />
 
       {/* Search Bar */}
       <SearchBar value={searchTerm} onChange={setSearchTerm} />
 
       {/* Product Grid */}
-      {filtered.length === 0 ? (
+
+      {loading ? (
+        <p className="text-center text-gray-500 text-lg font-medium">
+          Loading products...
+        </p>
+      ) : filtered.length === 0 ? (
         <div className="w-full flex justify-center items-center py-20">
           <p className="text-gray-500 text-lg font-medium">No items found</p>
         </div>
@@ -57,39 +67,70 @@ export const HomeView: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-14 p-4">
           {filtered.map((p: Product) => (
             <ProductCard
-              key={p.id}
+              key={p.prod_code}
               product={p}
-              onAdd={addToCart}
+              // onAdd={(prod) => console.log("ADD", prod)}
+              onAdd={() => {}}
               onClick={() => setSelected(p)}
             />
           ))}
         </div>
       )}
 
-        <TopUpModal
-        open={showTopUp}
-        onClose={() => setShowTopUp(false)}
-      />
+      <TopUpModal open={showTopUp} onClose={() => setShowTopUp(false)} />
+
+      {/* {selected && (
+        <ProductModal
+          product={selected}
+          supplyDate="2025-12-04"
+          onClose={() => setSelected(null)}
+          onConfirm={async (qty, supplyShift) => {
+            try {
+              await addToCart(
+                "2026-01-01", // supplydate
+                supplyShift, // 1 = Morning, 2 = Evening
+                selected.prod_code,
+                qty
+              );
+
+              // toast.success(`🛒 Added to ${qty} item(s) cart`);
+
+              toast.success(
+                supplyShift === 1
+                  ? `🌅 Morning shift – ${qty} item(s) added`
+                  : `🌙 Evening shift – ${qty} item(s) added`
+              );
+              setSelected(null);
+            } catch (err) {
+              toast.error("Failed to add to cart");
+            }
+          }}
+        />
+      )} */}
 
       {selected && (
         <ProductModal
-          product={selected}
+          product={{
+            prod_code: selected.prod_code,
+            prod_name: selected.prod_name,
+            final_rate: Number(selected.final_rate), // 🔥 FIX
+            imagepath: selected.imagepath,
+          }}
+          supplyDate="2025-12-04"
           onClose={() => setSelected(null)}
-          // onConfirm={(qty) => {
-          //   for (let i = 0; i < qty; i++) addToCart(selected);
-          //   setSelected(null);
-          // }}
-          onConfirm={(qty) => {
-            addToCart(selected, qty); // 👈 correct
-            toast.success(`🛒 Added ${qty} item(s) to cart`, {
-              hideProgressBar: true,
-            });
-            setSelected(null);
+          onConfirm={async (qty, supplyShift) => {
+            await addToCart("2026-01-05", supplyShift, selected.prod_code, qty);
 
-            // navigate("/cart");
+            toast.success(
+              supplyShift === 1
+                ? `🌅 Morning shift – ${qty} item(s) added`
+                : `🌙 Evening shift – ${qty} item(s) added`
+            );
+            setSelected(null);
           }}
         />
       )}
+
       <ToastContainer position="top-right" autoClose={1200} />
     </div>
   );

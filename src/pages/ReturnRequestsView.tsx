@@ -1,6 +1,6 @@
 import { ArrowRight, Clock, RefreshCcw } from "lucide-react";
 import { useStore } from "../context/store/store";
-import type { ReturnItem } from "../types/types";
+import type { ReturnItem } from "../typesss/typesss";
 import { useNavigate } from "react-router-dom";
 
 // interface ReturnItem {

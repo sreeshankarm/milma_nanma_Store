@@ -1,6 +1,6 @@
 import { Truck, History } from "lucide-react";
-import type { Order } from "../../types/types";
-import { OrderStatus } from "../../types/types";
+import type { Order } from "../../typesss/typesss";
+import { OrderStatus } from "../../typesss/typesss";
 
 interface StatsCardsProps {
   orders: Order[];

@@ -7,8 +7,8 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { useStore } from "../context/store/store";
-import { ComplaintCategory } from "../types/types";
-// import type { ComplaintStatus } from "../types/types";
+import { ComplaintCategory } from "../typesss/typesss";
+// import type { ComplaintStatus } from "../typesss/typesss";
 
 /* ----------------------------------------
    STATUS BADGE STYLES

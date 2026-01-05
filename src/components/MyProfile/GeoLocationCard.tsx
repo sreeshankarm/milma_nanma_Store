@@ -1,15 +1,18 @@
 import { Compass, Navigation2 } from "lucide-react";
-import type { UserProfile } from "../../types/types";
+// import type { UserProfile } from "../../typesss/typesss";
+import type { UserProfile } from "../../types/profile";
+
 
 interface GeoLocationCardProps {
-  profile: UserProfile;
-  geoLabel: string;
+  profile: UserProfile | null;
+  geoLabel?: string;
   isLocating: boolean;
   locationStatus: string;
-  onUpdate: () => void;
+  onUpdate?: () => void;
 }
 
 const GeoLocationCard: React.FC<GeoLocationCardProps> = ({
+  // profile,
   geoLabel,
   isLocating,
   locationStatus,

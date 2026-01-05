@@ -1,15 +1,15 @@
 import React, { createContext, useContext, useState } from "react";
 import type {
   AppState,
-  Product,
+  Productt,
   Order,
   OrderItem,
   ReturnItem,
   DistributorContact,
   UserProfile,
   GeoLocation
-} from "../../types/types";
-import { OrderStatus } from "../../types/types";
+} from "../../typesss/typesss";
+import { OrderStatus } from "../../typesss/typesss";
 
 export type ViewState =
   | "HOME"
@@ -32,7 +32,7 @@ const PRODUCT_IMAGES = {
 };
 
 // --- MOCK DATA ---
-const INITIAL_PRODUCTS: Product[] = [
+const INITIAL_PRODUCTS: Productt[] = [
   {
     id: "milma-rich",
     name: "Milma Rich (Green)",
@@ -240,7 +240,7 @@ const updateGeoLocation = (geo: GeoLocation) => {
     );
   };
 
-  const addToCart = (product: Product, qty: number) => {
+  const addToCart = (product: Productt, qty: number) => {
     setState((s) => {
       const existing = s.cart.find((c) => c.product.id === product.id);
 

@@ -1,6 +1,7 @@
 import React from "react";
 import {
-
+  // ArrowDownRight,
+  // ArrowUpRight,
   Clock,
   History,
   Wallet,
@@ -31,7 +32,7 @@ export const MyWalletView: React.FC = () => {
 //   );
 
   return (
-    <div className="min-h-screen  py-8">
+    <div className="min-h-screen  dark:bg-[#0B1220] py-8">
       <div className="max-w-6xl mx-auto px-6 space-y-8 animate-fade-in">
 
         {/* ===== Wallet Summary ===== */}
@@ -76,9 +77,9 @@ export const MyWalletView: React.FC = () => {
         </div>
 
         {/* ===== Transactions Section ===== */}
-        <div className="bg-white  rounded-2xl border border-gray-200  shadow-sm">
-          <div className="flex items-center justify-between px-6 py-4 border-b ">
-            <div className="flex items-center gap-2 font-semibold text-gray-800 ">
+        <div className="bg-white dark:bg-white/5 rounded-2xl border border-gray-200 dark:border-white/10 shadow-sm">
+          <div className="flex items-center justify-between px-6 py-4 border-b dark:border-white/10">
+            <div className="flex items-center gap-2 font-semibold text-gray-800 dark:text-gray-100">
               <History size={18} />
               Wallet Transactions
             </div>
@@ -97,7 +98,7 @@ export const MyWalletView: React.FC = () => {
           </div>
 
           {/* Transactions */}
-          <div className="divide-y ">
+          <div className="divide-y dark:divide-white/5">
             {/* {sortedTx.map((tx) => (
               <div
                 key={tx.id}

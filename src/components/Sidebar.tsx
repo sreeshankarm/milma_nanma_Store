@@ -13,6 +13,10 @@ import {
   X,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "../context/auth/useAuth";
+import { useProfile } from "../context/profile/useProfile";
+import  { useEffect } from "react";
+
 
 interface Props {
   open: boolean;
@@ -21,6 +25,12 @@ interface Props {
 
 export default function Sidebar({ open, onClose }: Props) {
   const location = useLocation();
+    const { userName } = useAuth();
+    const { profile,fetchProfile } = useProfile();
+
+      useEffect(() => {
+        fetchProfile();
+      }, []);
 
   const menu = [
     { icon: <Home size={18} />, label: "Home", path: "/" },
@@ -31,17 +41,17 @@ export default function Sidebar({ open, onClose }: Props) {
     {
       icon: <PackageSearch size={18} />,
       label: "Order Tracking",
-      path: "/OrderTracking",
+      path: "/orderTracking",
     },
     {
       icon: <BarChart3 size={18} />,
       label: "Sales Trend",
-      path: "/SalesTrend",
+      path: "/salesTrend",
     },
     {
       icon: <RotateCw size={18} />,
       label: "Damages & Return",
-      path: "/DamagesReturn",
+      path: "/damagesReturn",
     },
     {
       icon: <Gift size={18} />,
@@ -51,12 +61,12 @@ export default function Sidebar({ open, onClose }: Props) {
     {
       icon: <MessageCircle size={18} />,
       label: "Feedback & Complaints",
-      path: "/FeedbackComplaints",
+      path: "/feedbackComplaints",
     },
     {
       icon: <Users size={18} />,
       label: "My distributors",
-      path: "/Mydistributors",
+      path: "/mydistributors",
     },
   ];
 
@@ -86,9 +96,9 @@ export default function Sidebar({ open, onClose }: Props) {
               className="w-18 h-18 object-cover rounded-full"
             />
             <p className="text-xl font-bold mt-2">Namma Store</p>
-            <p className="text-sm text-gray-600">Agent • REG-20491</p>
-            <p className="text-sm text-gray-600 mt-1">+91 98470 12021</p>
-            <p className="text-xs text-gray-500">Panampilly Nagar, Kochi</p>
+            <p className="text-sm text-gray-600">Agent • {userName}</p>
+            <p className="text-sm text-gray-600 mt-1">{profile?.login_mobile}</p>
+            <p className="text-xs text-gray-500">{profile?.state_name}</p>
           </div>
 
           {/* Close Button */}

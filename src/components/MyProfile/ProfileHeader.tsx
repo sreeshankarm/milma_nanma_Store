@@ -1,16 +1,19 @@
 import React from "react";
-import { User, Edit3,  ShieldCheck } from "lucide-react";
-import type { UserProfile } from "../../types/types";
+import { User, Edit3, ShieldCheck } from "lucide-react";
+// import type { UserProfile } from "../../typesss/typesss";
 import { useTranslation } from "../../utils/useTranslation";
+import type { UserProfile } from "../../types/profile";
+
 
 interface Props {
-  profile: UserProfile;
+  profile: UserProfile | null;
+  userName?: string | null; 
   isEditing: boolean;
   statusMessage: string;
   onToggleEdit: () => void;
 }
 
-const ProfileHeader: React.FC<Props> = ({ profile, isEditing, statusMessage, onToggleEdit }) => {
+const ProfileHeader: React.FC<Props> = ({ profile,userName, isEditing, statusMessage, onToggleEdit }) => {
   const { t } = useTranslation();
 
   return (
@@ -18,8 +21,8 @@ const ProfileHeader: React.FC<Props> = ({ profile, isEditing, statusMessage, onT
       <div className="flex items-start justify-between">
         <div>
           <p className="text-xs uppercase tracking-[0.2em] text-blue-100">{t("Profile")}</p>
-          <h1 className="text-2xl font-bold flex items-center gap-2 mt-1"><User size={20} /> {profile.name}</h1>
-          <p className="text-sm text-blue-100 mt-1">{profile.role} • {profile.regId}</p>
+          <h1 className="text-2xl font-bold flex items-center gap-2 mt-1"><User size={20} /> {profile?.agent_name}</h1>
+          <p className="text-sm text-blue-100 mt-1">Retailer • {userName}</p>
         </div>
         <div className="px-3 py-1.5 bg-white/15 rounded-full text-xs font-semibold flex items-center gap-2">
           <ShieldCheck size={14} /> {t("Verified partner")}

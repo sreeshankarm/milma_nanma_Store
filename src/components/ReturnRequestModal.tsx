@@ -32,6 +32,7 @@ interface Props {
 export default function ReturnRequestModal({
   show,
   onCancel,
+  // onConfirm,
   orderId,
   deliveryInfo,
   items,
@@ -126,7 +127,7 @@ export default function ReturnRequestModal({
 
   createReturnRequest(payload);
   onCancel();
-  navigate("/DamagesReturn");
+  navigate("/damagesReturn");
 };
 
 

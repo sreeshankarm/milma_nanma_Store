@@ -12,7 +12,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { useState } from "react";
-import { OrderStatus, type Order, type Product } from "../../types/types";
+import { OrderStatus, type Order, type Productt } from "../../typesss/typesss";
 import { useStore } from "../../context/store/store";
 import ReturnRequestModal from "../ReturnRequestModal";
 
@@ -264,7 +264,7 @@ className="mt-3 inline-flex items-center gap-2 rounded-lg border border-[#bfdbfe
         orderId={order.id}
         deliveryInfo={`${new Date(order.createdAt).toLocaleDateString()} • Morning (9am - 2pm)`}
         items={order.items.map((i) => {
-          const product = products.find((p: Product) => p.id === i.productId);
+          const product = products.find((p: Productt) => p.id === i.productId);
           return { id: i.id, name: i.name, quantity: i.quantity, price: i.price, image: product?.image || "" };
         })}
       />

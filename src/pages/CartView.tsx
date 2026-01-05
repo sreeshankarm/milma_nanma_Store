@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Sun,
   Moon,
@@ -9,26 +9,48 @@ import {
   CheckCircle,
 } from "lucide-react";
 import CartList from "../components/CartList";
-import { useStore } from "../context/store/store";
-import type { CartItem,OrderItem } from "../types/types";
-import { useNavigate } from "react-router-dom";
-
+// import { useStore } from "../context/store/store";
+// import type { CartItem,OrderItem } from "../typesss/typesss";
+// import { useNavigate } from "react-router-dom";
+import { useCart } from "../context/cart/useCart";
+import type { CartItem } from "../types/cart";
+import ProductModal from "../components/ProductModal";
+import { updateCartApi } from "../api/cart.api";
+import { toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function CartView() {
   // const { cart, balance, updateCartQty, removeFromCart } = useStore();
+  // const {
+  //   cart,
+  //   balance,
+  //   increaseQty,
+  //   decreaseQty,
+  //   removeFromCart,
+  //   createOrder,
+  //   clearCart
+  // } = useStore();
+
   const {
     cart,
-    balance,
+    loadCart,
+    removeFromCart,
     increaseQty,
     decreaseQty,
-    removeFromCart,
-    createOrder,
-    clearCart 
-  } = useStore();
+    placeOrder,
+  } = useCart();
 
   const [selectedDate, setSelectedDate] = useState(0);
   const [shift, setShift] = useState<"morning" | "evening">("morning");
-  const navigate = useNavigate();
+  const [editItem, setEditItem] = useState<CartItem | null>(null);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+
+  // const navigate = useNavigate();
+
+  useEffect(() => {
+    loadCart();
+  }, []);
 
   const dates = [
     { day: "Mon", date: 8 },
@@ -40,33 +62,61 @@ export default function CartView() {
     { day: "Sun", date: 14 },
   ];
 
+  // const total = cart.reduce(
+  //   (sum: number, item: CartItem) => sum + item.product.price * item.quantity,
+  //   0
+  // );
+
   const total = cart.reduce(
-    (sum: number, item: CartItem) => sum + item.product.price * item.quantity,
+    (sum: number, item: CartItem) => sum + item.rate * item.quantity,
     0
   );
   // CONFIRM INDENT -> CREATE ORDER
 
+  // const handleConfirm = () => {
+  //   if (cart.length === 0) return;
 
-const handleConfirm = () => {
-  if (cart.length === 0) return;
+  //   const orderItems: OrderItem[] = cart.map((c: CartItem, index: number) => ({
+  //     id: "i" + (index + 1),
+  //     productId: c.product.id,
+  //     name: c.product.name,
+  //     quantity: c.quantity,
+  //     price: c.product.price,
+  //   }));
 
-  const orderItems: OrderItem[] = cart.map((c: CartItem, index: number) => ({
-    id: "i" + (index + 1),
-    productId: c.product.id,
-    name: c.product.name,
-    quantity: c.quantity,
-    price: c.product.price,
-  }));
+  //   createOrder(orderItems);
 
-  createOrder(orderItems);
+  //     clearCart();           // ✅ clear cart after creating order
 
-    clearCart();           // ✅ clear cart after creating order
+  //   navigate("/orders");
+  // };
 
+  /* ---------- CONFIRM ---------- */
+  // const handleConfirm = () => {
+  //   if (cart.length === 0) return;
 
-  navigate("/orders");
-};
+  //   // 👉 backend PLACE ORDER api call can go here later
+  //   navigate("/orders");
+  // };
 
-  
+  const handleConfirm = async () => {
+    if (cart.length === 0) {
+      toast.error("Cart is empty");
+      return;
+    }
+
+    try {
+      setConfirmLoading(true);
+
+      await placeOrder(); // 🔥 PLACE ORDER
+      // navigate("/orders"); // ✅ success redirect
+    } catch {
+      // error toast already handled in provider
+    } finally {
+      setConfirmLoading(false);
+    }
+  };
+
   return (
     <div className="max-w-xl mx-auto p-5 space-y-6">
       <h1 className="text-2xl font-bold">Your Cart</h1>
@@ -88,10 +138,57 @@ const handleConfirm = () => {
             // onDecrease={(id) => updateCartQty(id, "dec")}
             // onRemove={(id) => removeFromCart(id)}
             items={cart}
-            onIncrease={(id) => increaseQty(id)}
-            onDecrease={(id) => decreaseQty(id)}
+            onIncrease={(item) => increaseQty(item)}
+            onDecrease={(item) => decreaseQty(item)}
             onRemove={(id) => removeFromCart(id)}
+            onEdit={(item) => setEditItem(item)}
           />
+
+          {/* 🟠 EDIT MODAL */}
+          {editItem && (
+            <ProductModal
+              product={{
+                prod_code: editItem.productgid,
+                prod_name: editItem.productname,
+                final_rate: Number(editItem.rate), // ✅ ENSURE NUMBER
+                imagepath: "",
+              }}
+              supplyDate={editItem.supplydate}
+              initialQty={editItem.quantity}
+              initialShift={editItem.supplyshift}
+              onClose={() => setEditItem(null)}
+              // onConfirm={async (qty, supplyShift) => {
+              //   await updateCartApi({
+              //     cartid: editItem.cartid,
+              //     productgid: editItem.productgid,
+              //     quantity: qty,
+              //     supplydate: editItem.supplydate,
+              //     supplyshift: supplyShift,
+              //   });
+              //   toast.success("Cart updated");
+              //   setEditItem(null);
+              //   loadCart();
+              // }}
+              onConfirm={async (qty, supplyShift) => {
+                if (!editItem.productgid) {
+                  toast.error("Invalid product. Please refresh cart.");
+                  return;
+                }
+
+                await updateCartApi({
+                  cartid: editItem.cartid,
+                  productgid: editItem.productgid, // ✅ guaranteed number
+                  quantity: qty,
+                  supplydate: editItem.supplydate,
+                  supplyshift: supplyShift,
+                });
+
+                toast.success("Cart updated");
+                setEditItem(null);
+                loadCart();
+              }}
+            />
+          )}
 
           {/* Delivery Date */}
           <div className="bg-white border border-gray-200 rounded-xl shadow p-4">
@@ -183,7 +280,7 @@ const handleConfirm = () => {
 
             <div className="flex justify-between text-gray-600">
               <span>Wallet Balance</span>
-              <span>₹{balance}</span>
+              {/* <span>₹{balance}</span> */}
             </div>
 
             <div className="border-t pt-2">
@@ -193,20 +290,41 @@ const handleConfirm = () => {
               </div>
 
               <p className="text-green-600 text-sm mt-1">
-                You will have ₹{balance - total} left after deduction
+                You will have ₹{total} left after deduction
               </p>
             </div>
           </div>
 
-          <button
+          {/* <button
             className="w-full bg-[#8e2d26] text-white py-3 rounded-xl text-lg font-semibold flex items-center justify-center gap-2 cursor-pointer hover:bg-[#b91c1c] transition"
             onClick={handleConfirm}
           >
             Confirm Indent
             <ChevronRight size={20} />
+          </button> */}
+
+          <button
+            onClick={handleConfirm}
+            disabled={confirmLoading}
+            className={`w-full bg-[#8e2d26] text-white py-3 rounded-xl text-lg font-semibold
+    flex items-center justify-center gap-2 transition
+    ${confirmLoading ? "opacity-70 cursor-not-allowed" : "hover:bg-[#b91c1c]"}
+  `}
+          >
+            {confirmLoading && (
+              <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            )}
+
+            {/* <span>Confirm Indent</span> */}
+            <span>{confirmLoading ? "Placing Order..." : "Confirm Indent"}</span>
+
+
+            {!confirmLoading && <ChevronRight size={20} />}
           </button>
         </>
       )}
+
+      <ToastContainer position="top-right" autoClose={1200} />
     </div>
   );
 }

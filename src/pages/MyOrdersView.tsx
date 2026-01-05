@@ -4,8 +4,8 @@ import HeaderCard from "../components/orders/HeaderCard";
 import StatsCards from "../components/orders/StatsCards";
 import OrderFilters from "../components/orders/OrderFilters";
 import OrderList from "../components/orders/OrderList";
-import type { Order } from "../types/types"; // type-only import
-import { OrderStatus } from "../types/types"; // value import
+import type { Order } from "../typesss/typesss"; // type-only import
+import { OrderStatus } from "../typesss/typesss"; // value import
 import { useNavigate } from "react-router-dom";
 
 
@@ -63,7 +63,7 @@ const MyOrdersView: React.FC = () => {
       <HeaderCard
         returnIntentMessage={returnIntentMessage}
         clearReturn={() => setReturnIntentMessage(null)}
-        openReturns={() => navigate("/DamagesReturn")}
+        openReturns={() => navigate("/damagesReturn")}
       />
 
       <StatsCards orders={orders} />
