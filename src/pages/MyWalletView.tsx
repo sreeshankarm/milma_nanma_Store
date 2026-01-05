@@ -79,7 +79,7 @@ export const MyWalletView: React.FC = () => {
         {/* ===== Transactions Section ===== */}
         <div className="bg-white dark:bg-white/5 rounded-2xl border border-gray-200 dark:border-white/10 shadow-sm">
           <div className="flex items-center justify-between px-6 py-4 border-b dark:border-white/10">
-            <div className="flex items-center gap-2 font-semibold text-gray-800 dark:text-gray-100">
+            <div className="flex items-center gap-2 font-semibold text-gray-800 ">
               <History size={18} />
               Wallet Transactions
             </div>
