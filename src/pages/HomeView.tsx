@@ -119,7 +119,7 @@ export const HomeView: React.FC = () => {
           supplyDate="2025-12-04"
           onClose={() => setSelected(null)}
           onConfirm={async (qty, supplyShift) => {
-            await addToCart("2026-01-05", supplyShift, selected.prod_code, qty);
+            await addToCart("2026-01-06", supplyShift, selected.prod_code, qty);
 
             toast.success(
               supplyShift === 1
