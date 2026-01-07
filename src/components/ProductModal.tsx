@@ -1,4 +1,4 @@
-import { X, Sun, Moon, Clock} from "lucide-react";
+import { X, Sun, Moon, Clock } from "lucide-react";
 import { useState, useEffect } from "react";
 // import type { Product } from "../typesss/typesss";
 import { getProductDetailsApi } from "../api/product.api";
@@ -21,12 +21,13 @@ interface Props {
   initialQty?: number;
   initialShift?: number;
   onClose: () => void;
-  onConfirm: (qty: number, supplyShift: number) => void;
+  onConfirm: (qty: number, supplyShift: number, supplyDate: string) => void;
 }
 
 export default function ProductModal({
   product,
-  supplyDate,
+  // supplyDate,
+  supplyDate: initialDate,
   initialQty,
   initialShift,
   onClose,
@@ -51,6 +52,7 @@ export default function ProductModal({
   );
 
   const supplyShiftValue = shift === "morning" ? 1 : 2;
+  const [supplyDate, setSupplyDate] = useState(initialDate);
 
   /* 🔥 CALL PRODUCT DETAILS API */
   useEffect(() => {
@@ -73,20 +75,26 @@ export default function ProductModal({
     fetchDetails();
   }, [product.prod_code, supplyDate]);
 
+
+  useEffect(() => {
+  setSupplyDate(initialDate); // 🔥 reset when opening modal for another item
+}, [initialDate]);
+
   const price = Number(details?.final_rate || product.final_rate);
   const total = price * qty;
+
+  const today = new Date().toISOString().split("T")[0];
 
   return (
     <div className="fixed top-0 left-0 w-screen h-screen bg-black/40  flex justify-center items-center z-50 px-4">
       <div className="bg-white w-full max-w-lg rounded-3xl p-6 shadow-xl relative max-h-[90vh]  overflow-y-auto thin-scroll ">
-        
-             {/* ✅ DETAILS LOADER (USES detailsLoading → TS WARNING FIXED) */}
+        {/* ✅ DETAILS LOADER (USES detailsLoading → TS WARNING FIXED) */}
         {detailsLoading && (
           <div className="absolute inset-0 bg-white/70 flex items-center justify-center z-20 rounded-3xl">
             <span className="h-6 w-6 border-2 border-[#8e2d26] border-t-transparent rounded-full animate-spin" />
           </div>
         )}
-        
+
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -139,10 +147,27 @@ export default function ProductModal({
 
         <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-4 mt-3">
           {/* Header */}
-          <p className="font-semibold flex items-center gap-2 text-sm text-gray-800">
+          {/* <p className="font-semibold flex items-center gap-2 text-sm text-gray-800">
             <Clock size={16} className="text-orange-500" />
-            Shift Selection
-          </p>
+            Shift Selection : {supplyDate} <Calendar size={16}/>
+          </p> */}
+
+          <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <Clock size={18} className="text-orange-500" />
+              <span className="font-semibold text-gray-800 text-sm">
+                Shift Selection
+              </span>
+            </div>
+
+            <input
+              type="date"
+              min={today}
+              value={supplyDate}
+              onChange={(e) => setSupplyDate(e.target.value)}
+              className="border border-gray-300 rounded-lg px-3 py-1 text-sm text-gray-700 hover:border-gray-400 focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-orange-400 w-full sm:w-auto"
+            />
+          </div>
 
           {/* Shift Cards */}
           <div className="grid grid-cols-2 gap-4">
@@ -227,7 +252,7 @@ export default function ProductModal({
           onClick={async () => {
             setSubmitLoading(true);
             try {
-              await onConfirm(qty, supplyShiftValue);
+              await onConfirm(qty, supplyShiftValue, supplyDate);
             } finally {
               setSubmitLoading(false);
             }

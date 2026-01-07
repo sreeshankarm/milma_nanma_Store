@@ -169,7 +169,7 @@ export default function CartView() {
               //   setEditItem(null);
               //   loadCart();
               // }}
-              onConfirm={async (qty, supplyShift) => {
+              onConfirm={async (qty, supplyShift, newDate) => {
                 if (!editItem.productgid) {
                   toast.error("Invalid product. Please refresh cart.");
                   return;
@@ -179,7 +179,9 @@ export default function CartView() {
                   cartid: editItem.cartid,
                   productgid: editItem.productgid, // ✅ guaranteed number
                   quantity: qty,
-                  supplydate: editItem.supplydate,
+                  // supplydate: editItem.supplydate,
+                  supplydate: newDate, // ✅ UPDATED DATE
+
                   supplyshift: supplyShift,
                 });
 
@@ -316,8 +318,9 @@ export default function CartView() {
             )}
 
             {/* <span>Confirm Indent</span> */}
-            <span>{confirmLoading ? "Placing Order..." : "Confirm Indent"}</span>
-
+            <span>
+              {confirmLoading ? "Placing Order..." : "Confirm Indent"}
+            </span>
 
             {!confirmLoading && <ChevronRight size={20} />}
           </button>

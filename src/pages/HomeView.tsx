@@ -5,6 +5,8 @@ import QuickActions from "../components/QuickActions";
 import FeedbackBanner from "../components/FeedbackBanner";
 import SearchBar from "../components/SearchBar";
 import ProductCard from "../components/ProductCard"; // ✅ default import
+import SupplyDateCard from "../components/SupplyDateCard";
+
 // import type { Productt } from "../typesss/typesss";
 import ProductModal from "../components/ProductModal";
 import { useNavigate } from "react-router-dom";
@@ -17,22 +19,36 @@ import type { Product } from "../types/product";
 import { useCart } from "../context/cart/useCart";
 
 export const HomeView: React.FC = () => {
-  const { balance } = useStore();
+  const { balance,
+    //  getProducts
+     } = useStore();
   const { products, loading, fetchProducts } = useProduct();
   const { addToCart } = useCart();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selected, setSelected] = useState<Product | null>(null);
   const [showTopUp, setShowTopUp] = useState(false);
+  // ✅ Supply Date State
+  // const [supplyDate, setSupplyDate] = useState("2026-01-07");
+  const getToday = () => {
+    const today = new Date();
+    return today.toISOString().split("T")[0]; // YYYY-MM-DD
+  };
+
+  const [supplyDate, setSupplyDate] = useState(getToday());
 
   const filtered = products.filter((p) =>
     p.prod_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
   const navigate = useNavigate();
 
+  // useEffect(() => {
+  //   fetchProducts("2025-12-04");
+  // }, []);
+
   useEffect(() => {
-    fetchProducts("2025-12-04");
-  }, []);
+    fetchProducts(supplyDate);
+  }, [supplyDate]);
 
   return (
     <div className="p-4 pb-28 space-y-8 animate-fade-in">
@@ -46,9 +62,18 @@ export const HomeView: React.FC = () => {
           setActiveView={() => {}}
         />
       </div>
+      {/* ================= Feedback & Supply Date ================= */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
+        {/* Feedback Banner */}
 
-      {/* Complaint & Feedback Banner */}
-      <FeedbackBanner onClick={() => navigate("/FeedbackComplaints")} />
+        <FeedbackBanner onClick={() => navigate("/feedbackComplaints")} />
+
+        {/* Supply Date */}
+        <SupplyDateCard
+          value={supplyDate}
+          onChange={(date) => setSupplyDate(date)}
+        />
+      </div>
 
       {/* Search Bar */}
       <SearchBar value={searchTerm} onChange={setSearchTerm} />
@@ -116,10 +141,11 @@ export const HomeView: React.FC = () => {
             final_rate: Number(selected.final_rate), // 🔥 FIX
             imagepath: selected.imagepath,
           }}
-          supplyDate="2025-12-04"
+          // supplyDate="2025-12-04"
+          supplyDate={supplyDate}
           onClose={() => setSelected(null)}
-          onConfirm={async (qty, supplyShift) => {
-            await addToCart("2026-01-07", supplyShift, selected.prod_code, qty);
+          onConfirm={async (qty, supplyShift,supplyDate) => {
+            await addToCart(supplyDate, supplyShift, selected.prod_code, qty);
 
             toast.success(
               supplyShift === 1
