@@ -99,7 +99,7 @@ export const TopUpModal: React.FC<Props> = ({ open, onClose }) => {
         </button>
 
         <p className="text-xs text-center text-gray-500 mt-4 flex items-center justify-center gap-1">
-          <CheckCircle2 size={12} /> Secured by Nanma Pay
+          <CheckCircle2 size={12} /> Secured by Nanma  Pay
         </p>
       </div>
     </div>
