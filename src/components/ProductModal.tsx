@@ -123,6 +123,9 @@ export default function ProductModal({
           <p className="text-sm text-gray-500">Unit: {details.uom_name}</p>
         )} */}
 
+         {/* SCROLLABLE SECTION ONLY */}
+        <div className="max-h-[50vh] overflow-y-auto thin-scroll pr-1">
+
         {/* Quantity Selector */}
         <div className="mt-3 w-full bg-gray-100 rounded-2xl px-4 py-3 flex items-center justify-between">
           {/* Minus Button */}
@@ -236,6 +239,8 @@ export default function ProductModal({
             {/* <span>₹{product.price * qty}</span> */}
             <span>₹{total.toFixed(2)}</span>
           </div>
+        </div>
+
         </div>
 
         {/* Confirm Button */}
