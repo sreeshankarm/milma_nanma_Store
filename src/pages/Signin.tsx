@@ -1,15 +1,10 @@
-
-
-
-
-
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import { useForm } from "react-hook-form";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "../context/auth/useAuth";
-// import { useEffect } from "react";
-
+import { Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
 
 interface SigninForm {
   mobile: string;
@@ -18,7 +13,8 @@ interface SigninForm {
 
 const Signin = () => {
   const { login } = useAuth();
-  
+  const [showPassword, setShowPassword] = useState(false);
+
   const navigate = useNavigate();
   //   useEffect(() => {
   //   if (isAuth) {
@@ -48,10 +44,9 @@ const Signin = () => {
       }, 1000);
     } catch (err: any) {
       toast.dismiss("login");
-      toast.error(
-        err?.response?.data?.message || "Invalid credentials",
-        { theme: "colored" }
-      );
+      toast.error(err?.response?.data?.message || "Invalid credentials", {
+        theme: "colored",
+      });
     }
   };
 
@@ -70,10 +65,7 @@ const Signin = () => {
         <h2 className="text-center text-xl font-semibold mb-6">Sign In</h2>
 
         {/* FORM */}
-        <form
-          autoComplete="off"
-          onSubmit={handleSubmit(onSubmit)}
-        >
+        <form autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
           {/* 🔒 AUTOFILL PREVENTION (DO NOT REMOVE) */}
           <input
             type="text"
@@ -122,7 +114,7 @@ const Signin = () => {
           </div>
 
           {/* PASSWORD */}
-          <div className="mb-6">
+          {/* <div className="mb-6">
             <label className="text-sm font-medium text-gray-700">
               Password
             </label>
@@ -146,6 +138,51 @@ const Signin = () => {
                     : "border-gray-300 focus:ring-sky-200"
                 }`}
             />
+
+            {errors.password && (
+              <p className="mt-1 text-xs text-red-500">
+                {errors.password.message}
+              </p>
+            )}
+          </div> */}
+
+          {/* PASSWORD */}
+          <div className="mb-6">
+            <label className="text-sm font-medium text-gray-700">
+              Password
+            </label>
+
+            <div className="relative mt-1">
+              <input
+                type={showPassword ? "text" : "password"}
+                autoComplete="new-password"
+                placeholder="Enter password"
+                {...register("password", {
+                  required: "Password is required",
+                  minLength: {
+                    value: 6,
+                    message: "Password must be at least 6 characters",
+                  },
+                })}
+                className={`w-full rounded-lg border px-3 py-2 pr-10 text-sm
+        focus:outline-none focus:ring-2
+        ${
+          errors.password
+            ? "border-red-400 focus:ring-red-200"
+            : "border-gray-300 focus:ring-sky-200"
+        }`}
+              />
+
+              {/* 👁 SHOW / HIDE BUTTON */}
+              <button
+                type="button"
+                onClick={() => setShowPassword((p) => !p)}
+                className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600"
+                tabIndex={-1}
+              >
+                {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+              </button>
+            </div>
 
             {errors.password && (
               <p className="mt-1 text-xs text-red-500">
