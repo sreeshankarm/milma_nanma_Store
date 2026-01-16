@@ -19,9 +19,10 @@ import type { Product } from "../types/product";
 import { useCart } from "../context/cart/useCart";
 
 export const HomeView: React.FC = () => {
-  const { balance,
+  const {
+    balance,
     //  getProducts
-     } = useStore();
+  } = useStore();
   const { products, loading, fetchProducts } = useProduct();
   const { addToCart } = useCart();
 
@@ -133,7 +134,7 @@ export const HomeView: React.FC = () => {
         />
       )} */}
 
-      {selected && (
+      {/* {selected && (
         <ProductModal
           product={{
             prod_code: selected.prod_code,
@@ -155,9 +156,55 @@ export const HomeView: React.FC = () => {
             setSelected(null);
           }}
         />
+      )} */}
+
+      {selected && (
+        <ProductModal
+          product={{
+            prod_code: selected.prod_code,
+            prod_name: selected.prod_name,
+            final_rate: Number(selected.final_rate),
+            imagepath: selected.imagepath,
+          }}
+          supplyDate={supplyDate}
+          onClose={() => setSelected(null)}
+          onConfirm={async (qty, supplyShift, supplyDate) => {
+            try {
+              const res = await addToCart(
+                supplyDate,
+                supplyShift,
+                selected.prod_code,
+                qty
+              );
+
+              /* ❌ BUSINESS ERROR */
+              if (res.error) {
+                toast.error(res.error, { theme: "colored" });
+                return;
+              }
+
+              /* ✅ SUCCESS */
+              // toast.success(
+              //   supplyShift === 1
+              //     ? `🌅 Morning shift – ${qty} item(s) added`
+              //     : `🌙 Evening shift – ${qty} item(s) added`
+              // );
+
+              toast.success(
+                supplyShift === 1
+                  ? `🌅 Morning shift  ${qty}  ${res.success}`
+                  : `🌙 Evening shift  ${qty}  ${res.success}`
+              );
+
+              setSelected(null);
+            } catch (error) {
+              toast.error("Failed to Add cart", { theme: "colored" });
+            }
+          }}
+        />
       )}
 
-      <ToastContainer position="top-right" autoClose={1200} />
+      {/* <ToastContainer position="top-right" autoClose={1200} /> */}
     </div>
   );
 };

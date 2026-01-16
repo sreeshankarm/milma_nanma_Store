@@ -1,6 +1,7 @@
 /* ---------- GENERIC API RESPONSE ---------- */
 export interface ApiSuccess {
   success: string | number;
+  error?: string;
 }
 
 /* ---------- DATE RANGE ---------- */

@@ -6,6 +6,8 @@ import {
   updateCartApi,
   placeOrderApi
 } from "../../api/cart.api";
+import type { ApiSuccess } from "../../types/api";
+
 // import type { ViewCartResponse } from "../../types";
 import { CartContext } from "../../context/cart/CartContext";
 import type { CartItem } from "../../types/cart";
@@ -42,38 +44,96 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     setLoading(false);
   };
 
+  // const addToCart = async (
+  //   supplydate: string,
+  //   supplyshift: number,
+  //   productcode: number,
+  //   quantity: number
+  // ) => {
+  //   await addToCartApi({
+  //     supplydate,
+  //     supplyshift,
+  //     productcode,
+  //     quantity,
+  //   });
+  //   await loadCart();
+  // };
+
+
   const addToCart = async (
-    supplydate: string,
-    supplyshift: number,
-    productcode: number,
-    quantity: number
-  ) => {
-    await addToCartApi({
-      supplydate,
-      supplyshift,
-      productcode,
-      quantity,
-    });
+  supplydate: string,
+  supplyshift: number,
+  productcode: number,
+  quantity: number
+): Promise<ApiSuccess> => {
+  const { data } = await addToCartApi({
+    supplydate,
+    supplyshift,
+    productcode,
+    quantity,
+  });
+
+  // 🔥 refresh cart only on success
+  if (!data.error) {
     await loadCart();
-  };
+  }
 
-  const removeFromCart = async (cartid: number) => {
-    try {
-      setLoading(true);
+  // ✅ RETURN API RESPONSE
+  return data;
+};
 
-      await deleteCartApi({ cartid });
 
-      // ✅ SUCCESS TOAST
-      toast.success("Item removed from cart");
+  // const removeFromCart = async (cartid: number) => {
+  //   try {
+  //     setLoading(true);
 
-      await loadCart(); // 🔥 refresh UI immediately
-    } catch (error) {
-      // ❌ ERROR TOAST
-      toast.error("Failed to remove item");
-    } finally {
-      setLoading(false);
+  //     await deleteCartApi({ cartid });
+
+  //     // ✅ SUCCESS TOAST
+  //     toast.success("Item removed from cart");
+
+  //     await loadCart(); // 🔥 refresh UI immediately
+  //   } catch (error) {
+  //     // ❌ ERROR TOAST
+  //     toast.error("Failed to remove item");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+
+const removeFromCart = async (cartid: number): Promise<ApiSuccess> => {
+  try {
+    setLoading(true);
+
+    const { data } = await deleteCartApi({ cartid });
+
+    /* ❌ BUSINESS ERROR FROM API */
+    if (data.error) {
+      toast.error(data.error, { theme: "colored" });
+      return data;
     }
-  };
+
+    /* ✅ SUCCESS */
+    toast.success(`Item removed from cart:${data.success}`);
+
+    await loadCart(); // 🔄 refresh UI
+
+    return data;
+  } catch (error) {
+    /* ❌ NETWORK / SERVER ERROR */
+    toast.error("Failed to remove item", { theme: "colored" });
+
+    return {
+      success: "",
+      error: "Failed to remove item",
+    };
+  } finally {
+    setLoading(false);
+  }
+};
+
+
 
   const increaseQty = async (item: CartItem) => {
     await updateCartApi({
@@ -105,22 +165,83 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
 
-  const placeOrder = async () => {
+//   const placeOrder = async () => {
+//   try {
+//     setLoading(true);
+
+//     await placeOrderApi(); // 🔥 API CALL
+
+//     toast.success("Order placed successfully");
+
+//     setCart([]); // ✅ clear cart UI
+//   } catch (error) {
+//     toast.error("Failed to place order");
+//     throw error;
+//   } finally {
+//     setLoading(false);
+//   }
+// };
+
+
+const placeOrder = async (): Promise<ApiSuccess> => {
   try {
     setLoading(true);
 
-    await placeOrderApi(); // 🔥 API CALL
+    const { data } = await placeOrderApi();
 
-    toast.success("Order placed successfully");
+    /* ❌ BUSINESS ERROR FROM API */
+    if (data.error) {
+      toast.error(data.error, { theme: "colored" });
+      return data;
+    }
+
+    /* ✅ SUCCESS */
+    toast.success(
+      data.success || "Order placed successfully",
+      { theme: "colored" }
+    );
 
     setCart([]); // ✅ clear cart UI
+
+    return data;
   } catch (error) {
-    toast.error("Failed to place order");
-    throw error;
+    /* ❌ NETWORK / SERVER ERROR */
+    toast.error("Failed to place order", { theme: "colored" });
+
+    return {
+      success: "",
+      error: "Failed to place order",
+    };
   } finally {
     setLoading(false);
   }
 };
+
+
+
+const updateCart = async (
+  cartid: number,
+  productgid: number,
+  quantity: number,
+  supplydate: string,
+  supplyshift: number
+): Promise<ApiSuccess> => {
+  const { data } = await updateCartApi({
+    cartid,
+    productgid,
+    quantity,
+    supplydate,
+    supplyshift,
+  });
+
+  // 🔄 refresh cart only if success
+  if (!data.error) {
+    await loadCart();
+  }
+
+  return data;
+};
+
 
 
   return (
@@ -133,6 +254,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         removeFromCart,
         increaseQty,
         decreaseQty,
+         updateCart,
         placeOrder,
        
       }}

@@ -44,7 +44,7 @@ const Signin = () => {
       }, 1000);
     } catch (err: any) {
       toast.dismiss("login");
-      toast.error(err?.response?.data?.message || "Invalid credentials", {
+      toast.error(err?.message || "Invalid credentials", {
         theme: "colored",
       });
     }

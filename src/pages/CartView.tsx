@@ -15,9 +15,9 @@ import CartList from "../components/CartList";
 import { useCart } from "../context/cart/useCart";
 import type { CartItem } from "../types/cart";
 import ProductModal from "../components/ProductModal";
-import { updateCartApi } from "../api/cart.api";
+// import { updateCartApi } from "../api/cart.api";
 import { toast } from "react-toastify";
-import { ToastContainer } from "react-toastify";
+// import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function CartView() {
@@ -39,6 +39,7 @@ export default function CartView() {
     increaseQty,
     decreaseQty,
     placeOrder,
+    updateCart,
   } = useCart();
 
   const [selectedDate, setSelectedDate] = useState(0);
@@ -99,23 +100,40 @@ export default function CartView() {
   //   navigate("/orders");
   // };
 
+  // const handleConfirm = async () => {
+  //   if (cart.length === 0) {
+  //     toast.error("Cart is empty");
+  //     return;
+  //   }
+
+  //   try {
+  //     setConfirmLoading(true);
+
+  //     await placeOrder(); // 🔥 PLACE ORDER
+  //     // navigate("/orders"); // ✅ success redirect
+  //   } catch {
+  //     // error toast already handled in provider
+  //   } finally {
+  //     setConfirmLoading(false);
+  //   }
+  // };
+
+
   const handleConfirm = async () => {
-    if (cart.length === 0) {
-      toast.error("Cart is empty");
-      return;
-    }
+  if (cart.length === 0) {
+    toast.error("Cart is empty");
+    return;
+  }
 
-    try {
-      setConfirmLoading(true);
+  try {
+    setConfirmLoading(true);
+    await placeOrder(); // 🔥 toast handled inside provider
+    // navigate("/orders");
+  } finally {
+    setConfirmLoading(false);
+  }
+};
 
-      await placeOrder(); // 🔥 PLACE ORDER
-      // navigate("/orders"); // ✅ success redirect
-    } catch {
-      // error toast already handled in provider
-    } finally {
-      setConfirmLoading(false);
-    }
-  };
 
   return (
     <div className="max-w-xl mx-auto p-5 space-y-6">
@@ -145,7 +163,7 @@ export default function CartView() {
           />
 
           {/* 🟠 EDIT MODAL */}
-          {editItem && (
+          {/* {editItem && (
             <ProductModal
               product={{
                 prod_code: editItem.productgid,
@@ -188,6 +206,51 @@ export default function CartView() {
                 toast.success("Cart updated");
                 setEditItem(null);
                 loadCart();
+              }}
+            />
+          )} */}
+
+          {editItem && (
+            <ProductModal
+              product={{
+                prod_code: editItem.productgid,
+                prod_name: editItem.productname,
+                final_rate: Number(editItem.rate),
+                imagepath: "",
+              }}
+              supplyDate={editItem.supplydate}
+              initialQty={editItem.quantity}
+              initialShift={editItem.supplyshift}
+              onClose={() => setEditItem(null)}
+              onConfirm={async (qty, supplyShift, newDate) => {
+                if (!editItem.productgid) {
+                  toast.error("Invalid product. Please refresh cart.");
+                  return;
+                }
+
+                try {
+                  const res = await updateCart(
+                    editItem.cartid,
+                    editItem.productgid,
+                    qty,
+                    newDate,
+                    supplyShift
+                  );
+
+                  /* ❌ BUSINESS ERROR */
+                  if (res.error) {
+                    toast.error(res.error, { theme: "colored" });
+                    return;
+                  }
+
+                  /* ✅ SUCCESS */
+
+                  toast.success(`Cart updated: ${res.success}`);
+
+                  setEditItem(null);
+                } catch {
+                  toast.error("Failed to update cart", { theme: "colored" });
+                }
               }}
             />
           )}
@@ -327,7 +390,7 @@ export default function CartView() {
         </>
       )}
 
-      <ToastContainer position="top-right" autoClose={1200} />
+      {/* <ToastContainer position="top-right" autoClose={1200} /> */}
     </div>
   );
 }

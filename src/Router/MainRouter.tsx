@@ -73,7 +73,7 @@ const MainRouter = () => {
           {/* )} */}
 
           {/* ✅ GLOBAL TOAST */}
-          <ToastContainer position="top-right" autoClose={1500} />
+          <ToastContainer position="top-right" autoClose={1200} />
         </main>
       </div>
     </>

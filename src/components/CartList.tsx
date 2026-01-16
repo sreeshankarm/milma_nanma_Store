@@ -1,6 +1,7 @@
-import {  Trash2, Edit3 } from "lucide-react";
+import { Trash2, Edit3 } from "lucide-react";
 // import type { CartItem } from "../typesss/typesss";
 import type { CartItem } from "../types/cart";
+import { useState } from "react";
 
 interface Props {
   // items: CartItem[];
@@ -12,7 +13,7 @@ interface Props {
   onIncrease: (item: CartItem) => void;
   onDecrease: (item: CartItem) => void;
   onRemove: (cartid: number) => void;
-   onEdit: (item: CartItem) => void;
+  onEdit: (item: CartItem) => void;
 }
 
 export default function CartList({
@@ -20,8 +21,18 @@ export default function CartList({
   // onIncrease,
   // onDecrease,
   onRemove,
-  onEdit
+  onEdit,
 }: Props) {
+  const [removingId, setRemovingId] = useState<number | null>(null);
+
+  const handleRemove = async (cartid: number) => {
+    setRemovingId(cartid);
+    try {
+      await onRemove(cartid);
+    } finally {
+      setRemovingId(null);
+    }
+  };
   return (
     <div className="space-y-4">
       {items.map((item) => (
@@ -77,12 +88,28 @@ export default function CartList({
               <Edit3 size={18} />
             </button>
 
-            <button
+            {/* <button
               onClick={() => onRemove(item.cartid)}
               className="p-2 rounded-lg hover:bg-red-50 text-red-500"
               title="Remove item"
             >
               <Trash2 size={18} />
+            </button> */}
+
+            <button
+              onClick={() => handleRemove(item.cartid)}
+              disabled={removingId === item.cartid}
+              className="p-2 rounded-lg hover:bg-red-50 text-red-500 disabled:opacity-60"
+              title="Remove item"
+            >
+              {removingId === item.cartid ? (
+                <span
+                  className="h-4 w-4 border-2 border-red-500 border-t-transparent 
+                 rounded-full animate-spin block"
+                />
+              ) : (
+                <Trash2 size={18} />
+              )}
             </button>
           </div>
         </div>
