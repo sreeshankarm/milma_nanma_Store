@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import { useForm } from "react-hook-form";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "../context/auth/useAuth";
@@ -30,23 +30,36 @@ const Signin = () => {
     mode: "onBlur",
   });
 
+  // const onSubmit = async (data: SigninForm) => {
+  //   try {
+  //     toast.loading("Signing in...", { toastId: "login" });
+
+  //     await login(data.mobile, data.password);
+
+  //     toast.dismiss("login");
+  //     toast.success("Login successful");
+
+  //     setTimeout(() => {
+  //       navigate("/", { replace: true });
+  //     }, 1000);
+  //   } catch (err: any) {
+  //     toast.dismiss("login");
+  //     toast.error(err?.message || "Invalid credentials", {
+  //       theme: "colored",
+  //     });
+  //   }
+  // };
+
   const onSubmit = async (data: SigninForm) => {
     try {
-      toast.loading("Signing in...", { toastId: "login" });
-
       await login(data.mobile, data.password);
 
-      toast.dismiss("login");
-      toast.success("Login successful");
-
+      // ✅ redirect on success
       setTimeout(() => {
         navigate("/", { replace: true });
-      }, 1000);
-    } catch (err: any) {
-      toast.dismiss("login");
-      toast.error(err?.message || "Invalid credentials", {
-        theme: "colored",
-      });
+      }, 800);
+    } catch {
+      // ❌ Error toast already handled in AuthProvider
     }
   };
 

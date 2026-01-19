@@ -5,6 +5,7 @@ import { getUserApi } from "../../api/user.api";
 import { token } from "../../utils/token";
 import Loader from "../../components/Loader";
 import type { LoginPayload } from "../../types";
+import { toast } from "react-toastify";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuth, setIsAuth] = useState<boolean>(!!token.getAccess());
@@ -31,9 +32,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         setUserName(res.data.user.user_name);
         setIsAuth(true);
-      } catch (err: any){
-        
+      } catch (err: any) {
+        toast.error(err?.message || "Invalid credentials", {
+          theme: "colored",
+        });
+
         // token.clear();
+        // setIsAuth(false);
       } finally {
         setLoading(false);
       }
@@ -43,18 +48,41 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   /* ---------- LOGIN ---------- */
+  // const login = async (mobile: string, password: string) => {
+  //   const payload: LoginPayload = {
+  //     login_mobile: mobile,
+  //     password,
+  //   };
+
+  //   const { data } = await loginApi(payload);
+  //   token.set(data);
+
+  //   const userRes = await getUserApi();
+  //   setUserName(userRes.data.user.user_name);
+  //   setIsAuth(true);
+  // };
+
   const login = async (mobile: string, password: string) => {
-    const payload: LoginPayload = {
-      login_mobile: mobile,
-      password,
-    };
+    try {
+      const payload: LoginPayload = {
+        login_mobile: mobile,
+        password,
+      };
 
-    const { data } = await loginApi(payload);
-    token.set(data);
+      const { data } = await loginApi(payload);
+      token.set(data);
 
-    const userRes = await getUserApi();
-    setUserName(userRes.data.user.user_name);
-    setIsAuth(true);
+      const userRes = await getUserApi();
+      setUserName(userRes.data.user.user_name);
+      setIsAuth(true);
+
+      toast.success("Login successful");
+    } catch (err: any) {
+      toast.error(err?.message || "Invalid mobile or password", {
+        theme: "colored",
+      });
+      throw err; // important if caller handles loading
+    }
   };
 
   /* ---------- LOGOUT ---------- */
