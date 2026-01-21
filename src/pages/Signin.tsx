@@ -102,6 +102,7 @@ const Signin = () => {
             <input
               type="tel"
               autoComplete="off"
+              disabled={isSubmitting}
               placeholder="Enter mobile number"
               {...register("mobile", {
                 required: "Mobile number is required",
@@ -116,7 +117,7 @@ const Signin = () => {
                   errors.mobile
                     ? "border-red-400 focus:ring-red-200"
                     : "border-gray-300 focus:ring-sky-200"
-                }`}
+                } ${isSubmitting ? "bg-gray-100 cursor-not-allowed" : ""} `}
             />
 
             {errors.mobile && (
@@ -169,6 +170,7 @@ const Signin = () => {
               <input
                 type={showPassword ? "text" : "password"}
                 autoComplete="new-password"
+                disabled={isSubmitting}
                 placeholder="Enter password"
                 {...register("password", {
                   required: "Password is required",
@@ -183,14 +185,14 @@ const Signin = () => {
           errors.password
             ? "border-red-400 focus:ring-red-200"
             : "border-gray-300 focus:ring-sky-200"
-        }`}
+        } ${isSubmitting ? "bg-gray-100 cursor-not-allowed" : ""}`}
               />
 
               {/* 👁 SHOW / HIDE BUTTON */}
               <button
                 type="button"
                 onClick={() => setShowPassword((p) => !p)}
-                className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600"
+                className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600 disabled:opacity-50 "
                 tabIndex={-1}
               >
                 {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
@@ -208,11 +210,16 @@ const Signin = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full flex items-center justify-center gap-2 rounded-lg py-2.5
-              text-sm font-semibold text-white
-              bg-[#8e2d25] hover:bg-[#b91c1c]
-              transition-colors duration-300
-              disabled:opacity-70"
+            className={`
+           w-full flex items-center justify-center gap-2
+           rounded-lg py-2.5 text-sm font-semibold text-white
+           transition-all duration-300
+           ${
+             isSubmitting
+               ? "bg-gray-400 cursor-not-allowed"
+               : "bg-[#8e2d25] hover:bg-[#b91c1c]"
+           }
+           `}
           >
             {isSubmitting && (
               <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />

@@ -212,6 +212,7 @@ export default function CartView() {
 
           {editItem && (
             <ProductModal
+            isEdit={true}
               product={{
                 prod_code: editItem.productgid,
                 prod_name: editItem.productname,

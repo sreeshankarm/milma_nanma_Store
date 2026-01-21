@@ -160,6 +160,7 @@ export const HomeView: React.FC = () => {
 
       {selected && (
         <ProductModal
+        isEdit={false}
           product={{
             prod_code: selected.prod_code,
             prod_name: selected.prod_name,
