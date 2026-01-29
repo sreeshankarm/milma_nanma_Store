@@ -58,7 +58,36 @@
 
 
 
+
+// export const normalizeCart = (
+//   output: ViewCartResponse["output"]
+// ): CartItem[] => {
+//   const items: CartItem[] = [];
+
+//   Object.entries(output).forEach(([date, dateObj]) => {
+//     Object.entries(dateObj).forEach(([shift, shiftObj]) => {
+//       Object.entries(shiftObj).forEach(([_, groupObj]) => {
+//         Object.entries(groupObj).forEach(([productgid, item]) => {
+//           items.push({
+//             cartid: item.cartid,
+//             productgid: Number(productgid), // 🔥 FIX
+//             productname: item.productname,
+//             quantity: Number(item.quantity),
+//             rate: Number(item.rate),
+//             supplydate: date,               // 🔥 FIX
+//             supplyshift: Number(shift),     // 🔥 FIX
+//           });
+//         });
+//       });
+//     });
+//   });
+
+//   return items;
+// };
+
+
 import type { ViewCartResponse, CartItem } from "../types/cart";
+
 
 export const normalizeCart = (
   output: ViewCartResponse["output"]
@@ -71,12 +100,19 @@ export const normalizeCart = (
         Object.entries(groupObj).forEach(([productgid, item]) => {
           items.push({
             cartid: item.cartid,
-            productgid: Number(productgid), // 🔥 FIX
+            productgid: Number(productgid),
             productname: item.productname,
             quantity: Number(item.quantity),
             rate: Number(item.rate),
-            supplydate: date,               // 🔥 FIX
-            supplyshift: Number(shift),     // 🔥 FIX
+            supplydate: date,
+            supplyshift: Number(shift),
+
+            // modal fields
+            prod_code: item.code,
+            prod_name: item.productname,
+            final_rate: item.rate,
+            imagepath: "",   // optional, populate if you have image
+            subgrp_name: "", // optional
           });
         });
       });

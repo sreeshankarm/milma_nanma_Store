@@ -70,7 +70,7 @@ export default function CartView() {
 
   const total = cart.reduce(
     (sum: number, item: CartItem) => sum + item.rate * item.quantity,
-    0
+    0,
   );
   // CONFIRM INDENT -> CREATE ORDER
 
@@ -118,22 +118,20 @@ export default function CartView() {
   //   }
   // };
 
-
   const handleConfirm = async () => {
-  if (cart.length === 0) {
-    toast.error("Cart is empty");
-    return;
-  }
+    if (cart.length === 0) {
+      toast.error("Cart is empty");
+      return;
+    }
 
-  try {
-    setConfirmLoading(true);
-    await placeOrder(); // 🔥 toast handled inside provider
-    // navigate("/orders");
-  } finally {
-    setConfirmLoading(false);
-  }
-};
-
+    try {
+      setConfirmLoading(true);
+      await placeOrder(); // 🔥 toast handled inside provider
+      // navigate("/orders");
+    } finally {
+      setConfirmLoading(false);
+    }
+  };
 
   return (
     <div className="max-w-xl mx-auto p-5 space-y-6">
@@ -212,12 +210,12 @@ export default function CartView() {
 
           {editItem && (
             <ProductModal
-            isEdit={true}
+              isEdit={true}
               product={{
-                prod_code: editItem.productgid,
-                prod_name: editItem.productname,
-                final_rate: Number(editItem.rate),
-                imagepath: "",
+                prod_code: editItem.prod_code,
+                prod_name: editItem.prod_name,
+                final_rate: Number(editItem.final_rate),
+                imagepath: editItem.imagepath,
               }}
               supplyDate={editItem.supplydate}
               initialQty={editItem.quantity}
@@ -235,7 +233,7 @@ export default function CartView() {
                     editItem.productgid,
                     qty,
                     newDate,
-                    supplyShift
+                    supplyShift,
                   );
 
                   /* ❌ BUSINESS ERROR */

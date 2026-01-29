@@ -111,8 +111,10 @@ export default function ProductModal({
         <img
           // src={product.image}
           // alt={product.name}
-          src={product.imagepath}
-          alt={product.prod_name}
+          // src={product.imagepath}
+          // alt={product.prod_name}
+          src={details?.imagepath || product.imagepath}
+          alt={details?.prod_name || product.prod_name}
           className="w-full h-32 object-contain mt-1  cursor-pointer "
         />
 
