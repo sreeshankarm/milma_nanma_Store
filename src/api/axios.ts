@@ -1,61 +1,11 @@
-// import axios from "axios";
-// import { token } from "../utils/token";
-
-// const api = axios.create({
-//   //   baseURL: "https://nanmastagingapi.milma.in",
-//   baseURL: "/api",
-//   // baseURL: import.meta.env.VITE_API_BASE_URL,
-
-//   headers: {
-//     Accept: "application/json",
-//     "Content-Type": "application/json",
-//   },
-// });
-
-// api.interceptors.request.use((config) => {
-//   const access = token.getAccess();
-//   const env = localStorage.getItem("environment");
-
-//   if (access) {
-//     config.headers.Authorization = `Bearer ${access}`;
-//   }
-
-//   if (env) {
-//     config.headers.environment = env;
-//   }
-//   return config;
-// });
-
-// api.interceptors.response.use(
-//   (res) => res,
-//   (err) => {
-//     if (err.response?.status === 401) {
-//       token.clear();
-//       window.location.href = "/signin";
-//     }
-//     return Promise.reject(err);
-//   },
-// );
-
-// export default api;
-
-
-
-
-
-
-
-
-
-
 import axios from "axios";
 import { token } from "../utils/token";
 
 const api = axios.create({
-  baseURL:
-    import.meta.env.MODE === "development"
-      ? "/api"
-      : "https://nanmastagingapi.milma.in/api",
+  //   baseURL: "https://nanmastagingapi.milma.in",
+  baseURL: "/api",
+  // baseURL: import.meta.env.VITE_API_BASE_URL,
+
   headers: {
     Accept: "application/json",
     "Content-Type": "application/json",
@@ -73,7 +23,6 @@ api.interceptors.request.use((config) => {
   if (env) {
     config.headers.environment = env;
   }
-
   return config;
 });
 
@@ -85,7 +34,16 @@ api.interceptors.response.use(
       window.location.href = "/signin";
     }
     return Promise.reject(err);
-  }
+  },
 );
 
 export default api;
+
+
+
+
+
+
+
+
+
