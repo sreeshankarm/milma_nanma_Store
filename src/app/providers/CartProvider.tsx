@@ -6,7 +6,7 @@ import {
   updateCartApi,
   placeOrderApi
 } from "../../api/cart.api";
-import type { ApiSuccess } from "../../types/api";
+import type { ApiSuccess } from "../../types/common";
 
 // import type { ViewCartResponse } from "../../types";
 import { CartContext } from "../../context/cart/CartContext";

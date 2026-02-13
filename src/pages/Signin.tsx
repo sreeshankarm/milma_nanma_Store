@@ -75,7 +75,7 @@ const Signin = () => {
           />
         </div>
 
-        <h2 className="text-center text-xl font-semibold mb-6">Sign In</h2>
+        <h2 className="text-center text-xl font-semibold mb-6 text-[#8e2d25]">Sign-In</h2>
 
         {/* FORM */}
         <form autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
@@ -205,6 +205,16 @@ const Signin = () => {
               </p>
             )}
           </div>
+
+          {/* <div className="text-right mb-4">
+            <button
+              type="button"
+              onClick={() => navigate("/signin/change-password")}
+              className="text-xs text-[#8e2d25] hover:underline"
+            >
+              Forgot password?
+            </button>
+          </div> */}
 
           {/* SUBMIT */}
           <button

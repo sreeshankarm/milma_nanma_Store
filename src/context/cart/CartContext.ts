@@ -19,7 +19,7 @@
 
 import { createContext } from "react";
 import type { CartItem } from "../../types/cart";
-import type { ApiSuccess } from "../../types/api";
+import type { ApiSuccess } from "../../types/common";
 
 // export interface CartContextType {
 //   cart: CartItem[];

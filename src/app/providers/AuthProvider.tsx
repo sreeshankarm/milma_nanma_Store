@@ -6,6 +6,7 @@ import { token } from "../../utils/token";
 import Loader from "../../components/Loader";
 import type { LoginPayload } from "../../types";
 import { toast } from "react-toastify";
+import { logoutApi } from "../../api/auth.api";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuth, setIsAuth] = useState<boolean>(!!token.getAccess());
@@ -86,11 +87,43 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   /* ---------- LOGOUT ---------- */
-  const logout = () => {
-    token.clear();
-    setIsAuth(false);
-    setUserName(null);
+  // const logout = () => {
+  //   token.clear();
+  //   setIsAuth(false);
+  //   setUserName(null);
+  // };
+
+    const logout = async () => {
+    try {
+      await logoutApi(); // ✅ backend token invalidation
+    } catch (err) {
+      // even if API fails, force logout
+      console.warn("Logout API failed, clearing session");
+    } finally {
+      token.clear();      // ✅ clear access token
+      setIsAuth(false);   // ✅ update auth state
+      setUserName(null);
+    }
   };
+
+  // const logout = async () => {
+  //   try {
+  //     const res = await logoutApi();
+
+  //     if (res.data?.success) {
+  //       toast.success("Logged out successfully");
+  //     } else {
+  //       toast.info("Session ended");
+  //     }
+  //   } catch (err) {
+  //     // backend may already invalidate token
+  //     toast.warning("Session expired. Please login again");
+  //   } finally {
+  //     token.clear(); // ✅ clear access token
+  //     setIsAuth(false); // ✅ update auth state
+  //     setUserName(null); // ✅ clear user
+  //   }
+  // };
 
   if (loading) return <Loader />;
 

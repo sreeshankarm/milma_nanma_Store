@@ -4,3 +4,7 @@ export * from "./profile.api";
 export * from "./product.api";
 export * from "./cart.api";
 export * from "./order.api";
+export * from "./ack.api";
+export * from "./invoice.api";
+export * from "./payment.api"
+export * from "./settings.api"

@@ -5,6 +5,7 @@ import { getProductDetailsApi } from "../api/product.api";
 
 import type { ModalProduct, ProductDetail } from "../types/product";
 // import type { Product } from "../types/product";
+import { getSettingsApi } from "../api/settings.api";
 
 // interface Props {
 //   product: Product;
@@ -56,6 +57,34 @@ export default function ProductModal({
   const supplyShiftValue = shift === "morning" ? 1 : 2;
   const [supplyDate, setSupplyDate] = useState(initialDate);
 
+  const [minDate, setMinDate] = useState("");
+  const [maxDate, setMaxDate] = useState("");
+  const [shiftText, setShiftText] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const data = await getSettingsApi();
+
+        const allowedDays = data?.maxallowedsupplydate ?? 7;
+        const today = new Date();
+
+        const min = new Date(today);
+        const max = new Date(today);
+        max.setDate(today.getDate() + (allowedDays - 1));
+
+        setMinDate(min.toISOString().split("T")[0]);
+        setMaxDate(max.toISOString().split("T")[0]);
+
+        setShiftText(data.shiftcodetext || {});
+      } catch (error) {
+        console.error("Settings load failed:", error);
+      }
+    };
+
+    loadSettings();
+  }, []);
+
   /* 🔥 CALL PRODUCT DETAILS API */
   useEffect(() => {
     const fetchDetails = async () => {
@@ -84,7 +113,7 @@ export default function ProductModal({
   const price = Number(details?.final_rate || product.final_rate);
   const total = price * qty;
 
-  const today = new Date().toISOString().split("T")[0];
+  // const today = new Date().toISOString().split("T")[0];
 
   const isChanged =
     qty !== initialQty ||
@@ -172,9 +201,14 @@ export default function ProductModal({
 
               <input
                 type="date"
-                min={today}
+                // min={today}
+                min={minDate}
+                max={maxDate}
                 value={supplyDate}
                 onChange={(e) => setSupplyDate(e.target.value)}
+                 onClick={(e) => e.currentTarget.showPicker()} // 🔥 always open on click
+          onKeyDown={(e) => e.preventDefault()} // block typing
+          onPaste={(e) => e.preventDefault()} // block paste
                 className="border border-gray-300 rounded-lg px-3 py-1 text-sm text-gray-700 hover:border-gray-400 focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-orange-400 w-full sm:w-auto"
               />
             </div>
@@ -196,7 +230,7 @@ export default function ProductModal({
               >
                 <Sun size={20} />
                 <span className="text-sm font-semibold">Morning Shift</span>
-                <span className="text-xs opacity-90">09:00 AM – 02:00 PM</span>
+                <span className="text-xs opacity-90">    {shiftText["1"] || "Loading..."}</span>
               </button>
 
               {/* Evening */}
@@ -214,7 +248,7 @@ export default function ProductModal({
               >
                 <Moon size={20} />
                 <span className="text-sm font-semibold">Evening Shift</span>
-                <span className="text-xs opacity-90">03:00 PM – 08:00 AM</span>
+                <span className="text-xs opacity-90">    {shiftText["2"] || "Loading..."}</span>
               </button>
             </div>
           </div>

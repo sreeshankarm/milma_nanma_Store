@@ -21,11 +21,30 @@ export const ProductProvider = ({
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchProducts = async (date: string) => {
-    setLoading(true);
-    const { data } = await getProductsApi(date);
-    setProducts(data.proddefaultratetypedata);
-    setLoading(false);
+  // const fetchProducts = async (date: string) => {
+  //   setLoading(true);
+  //   const { data } = await getProductsApi(date);
+  //   setProducts(data.proddefaultratetypedata);
+  //   setLoading(false);
+  // };
+
+
+   const fetchProducts = async (date: string) => {
+    try {
+      setLoading(true);
+
+      const { data } = await getProductsApi(date);
+
+      // If API returns empty or undefined
+      setProducts(data?.proddefaultratetypedata ?? []);
+    } catch (error) {
+      console.error("Product API failed:", error);
+
+      // 🔥 IMPORTANT: set empty array on failure
+      setProducts([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

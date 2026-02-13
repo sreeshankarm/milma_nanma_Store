@@ -1,13 +1,16 @@
-
 import React from "react";
 
 interface SupplyDateCardProps {
   value: string;
+  min: string;
+  max: string;
   onChange: (date: string) => void;
 }
 
 const SupplyDateCard: React.FC<SupplyDateCardProps> = ({
   value,
+  min,
+  max,
   onChange,
 }) => {
   return (
@@ -18,16 +21,19 @@ const SupplyDateCard: React.FC<SupplyDateCardProps> = ({
           <span className="text-xs opacity-70 uppercase tracking-wide ">
             Order Settings
           </span>
-          <label className="ttext-sm font-semibold">
-            Supply Date
-          </label>
+          <label className="ttext-sm font-semibold">Supply Date</label>
         </div>
 
         {/* Right: Date Input */}
         <input
           type="date"
           value={value}
+          min={min}
+          max={max}
           onChange={(e) => onChange(e.target.value)}
+          onClick={(e) => e.currentTarget.showPicker()} // 🔥 always open on click
+          onKeyDown={(e) => e.preventDefault()} // block typing
+          onPaste={(e) => e.preventDefault()} // block paste
           className="
             w-48
             rounded-lg
