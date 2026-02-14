@@ -17,7 +17,7 @@
     },
     {
       "src": "/api/(.*)",
-      "dest": "/api/$1"
+      "dest": "https://nanmastagingapi.milma.in/api/$1"
     },
     {
       "src": "/(.*)",
