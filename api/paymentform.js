@@ -12,8 +12,8 @@ export default async function handler(req, res) {
         method: "GET",
         headers: {
           Authorization: req.headers.authorization || "",
-          environment: req.headers.environment || "",
-        },
+          environment: req.headers.environment || ""
+        }
       }
     );
 
@@ -22,7 +22,7 @@ export default async function handler(req, res) {
     res.setHeader("Content-Type", "text/html");
     return res.status(200).send(html);
   } catch (error) {
-    console.error("Payment proxy error:", error);
+    console.error(error);
     return res.status(500).json({ message: "Payment proxy failed" });
   }
 }
