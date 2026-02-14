@@ -5,18 +5,20 @@ export default async function handler(req, res) {
     const response = await fetch(
       `https://nanmastagingapi.milma.in/api/paymentform?balance=${balance}`,
       {
+        method: "GET",
         headers: {
           Authorization: req.headers.authorization || "",
-          environment: req.headers.environment || ""
-        }
+          environment: req.headers.environment || "",
+        },
       }
     );
 
     const html = await response.text();
 
     res.setHeader("Content-Type", "text/html");
-    res.status(200).send(html);
+    return res.status(200).send(html);
   } catch (error) {
-    res.status(500).json({ message: "Proxy failed" });
+    console.error(error);
+    return res.status(500).json({ message: "Proxy failed" });
   }
 }
