@@ -232,8 +232,129 @@
 
 
 
+// import { X } from "lucide-react";
+// import { useEffect, useState, useCallback } from "react";
+// import { getPaymentFormHtml } from "../api/payment.api";
+
+// interface Props {
+//   open: boolean;
+//   onClose: () => void;
+//   balance: number;
+// }
+
+// type Status = "idle" | "loading" | "success" | "error";
+
+// export const TopUpModal: React.FC<Props> = ({
+//   open,
+//   onClose,
+//   balance,
+// }) => {
+//   const [html, setHtml] = useState<string>("");
+//   const [status, setStatus] = useState<Status>("idle");
+
+//   /* ---------------- LOAD PAYMENT FORM ---------------- */
+
+//   const loadPaymentForm = useCallback(async () => {
+//     try {
+//       setStatus("loading");
+//       setHtml("");
+
+//       const data = await getPaymentFormHtml(balance);
+
+//       if (!data || data.trim().length === 0) {
+//         throw new Error("Empty payment form response");
+//       }
+
+//       setHtml(data);
+//       setStatus("success");
+//     } catch (error) {
+//       console.error("Payment load failed:", error);
+//       setStatus("error");
+//     }
+//   }, [balance]);
+
+//   /* ---------------- EFFECT ---------------- */
+
+//   useEffect(() => {
+//     if (!open) return;
+
+//     loadPaymentForm();
+//   }, [open, loadPaymentForm]);
+
+//   /* ---------------- CLOSE RESET ---------------- */
+
+//   const handleClose = () => {
+//     setStatus("idle");
+//     setHtml("");
+//     onClose();
+//   };
+
+//   if (!open) return null;
+
+//   return (
+//     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+//       <div className="relative w-full max-w-4xl h-[90vh] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+
+//         {/* ---------- HEADER ---------- */}
+//         <div className="flex items-center justify-between px-6 py-4 border-b bg-[#8e2d26]">
+//           <h2 className="text-lg font-semibold text-white">
+//             Top Up Wallet
+//           </h2>
+
+//           <button
+//             onClick={handleClose}
+//            className="p-2 rounded-full bg-gray-100 transition"          >
+//             <X size={18} />
+//           </button>
+//         </div>
+
+//         {/* ---------- BODY ---------- */}
+//         <div className="relative flex-1 bg-gray-50">
+
+//           {/* 🔄 LOADING */}
+//           {status === "loading" && (
+//             <div className="absolute inset-0 flex items-center justify-center bg-white/70 backdrop-blur-sm">
+//               <div className="w-8 h-8 border-3 border-[#8e2d26] border-t-transparent rounded-full animate-spin" />
+//             </div>
+//           )}
+
+//           {/* ✅ SUCCESS */}
+//           {status === "success" && html && (
+//             <iframe
+//               title="Payment Form"
+//               srcDoc={html}
+//               className="w-full h-full border-0"
+//               sandbox="allow-scripts allow-forms allow-same-origin allow-popups"
+//             />
+//           )}
+
+//           {/* ❌ ERROR */}
+//           {status === "error" && (
+//             <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-600 text-sm gap-4">
+//               <p>Unable to load payment form.</p>
+
+//               <button
+//                 onClick={loadPaymentForm}
+//                 className="px-4 py-2 text-xs bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+//               >
+//                 Retry
+//               </button>
+//             </div>
+//           )}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+
+
+
+
+
+
 import { X } from "lucide-react";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { getPaymentFormHtml } from "../api/payment.api";
 
 interface Props {
@@ -242,104 +363,79 @@ interface Props {
   balance: number;
 }
 
-type Status = "idle" | "loading" | "success" | "error";
-
 export const TopUpModal: React.FC<Props> = ({
   open,
   onClose,
   balance,
 }) => {
-  const [html, setHtml] = useState<string>("");
-  const [status, setStatus] = useState<Status>("idle");
+  const [html, setHtml] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  /* ---------------- LOAD PAYMENT FORM ---------------- */
-
-  const loadPaymentForm = useCallback(async () => {
+  const loadPayment = async () => {
     try {
-      setStatus("loading");
-      setHtml("");
+      setLoading(true);
+      setError("");
 
       const data = await getPaymentFormHtml(balance);
 
-      if (!data || data.trim().length === 0) {
-        throw new Error("Empty payment form response");
-      }
+      if (!data) throw new Error("Empty response");
 
       setHtml(data);
-      setStatus("success");
-    } catch (error) {
-      console.error("Payment load failed:", error);
-      setStatus("error");
+    } catch (err) {
+      console.error("Payment form error:", err);
+      setError("Unable to load payment form.");
+    } finally {
+      setLoading(false);
     }
-  }, [balance]);
-
-  /* ---------------- EFFECT ---------------- */
+  };
 
   useEffect(() => {
-    if (!open) return;
-
-    loadPaymentForm();
-  }, [open, loadPaymentForm]);
-
-  /* ---------------- CLOSE RESET ---------------- */
-
-  const handleClose = () => {
-    setStatus("idle");
-    setHtml("");
-    onClose();
-  };
+    if (open) loadPayment();
+  }, [open]);
 
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="relative w-full max-w-4xl h-[90vh] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white w-full max-w-4xl h-[90vh] rounded-xl shadow-xl flex flex-col overflow-hidden">
 
-        {/* ---------- HEADER ---------- */}
-        <div className="flex items-center justify-between px-6 py-4 border-b bg-[#8e2d26]">
-          <h2 className="text-lg font-semibold text-white">
-            Top Up Wallet
-          </h2>
-
-          <button
-            onClick={handleClose}
-           className="p-2 rounded-full bg-gray-100 transition"          >
-            <X size={18} />
+        {/* Header */}
+        <div className="flex justify-between items-center px-6 py-4 bg-[#8e2d26] text-white">
+          <h2 className="font-semibold text-lg">Payment</h2>
+          <button onClick={onClose}>
+            <X size={20} />
           </button>
         </div>
 
-        {/* ---------- BODY ---------- */}
-        <div className="relative flex-1 bg-gray-50">
+        {/* Body */}
+        <div className="flex-1 relative">
 
-          {/* 🔄 LOADING */}
-          {status === "loading" && (
-            <div className="absolute inset-0 flex items-center justify-center bg-white/70 backdrop-blur-sm">
-              <div className="w-8 h-8 border-3 border-[#8e2d26] border-t-transparent rounded-full animate-spin" />
+          {loading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-white">
+              <div className="w-8 h-8 border-4 border-[#8e2d26] border-t-transparent rounded-full animate-spin" />
             </div>
           )}
 
-          {/* ✅ SUCCESS */}
-          {status === "success" && html && (
+          {error && (
+            <div className="flex flex-col items-center justify-center h-full gap-4 text-gray-600">
+              <p>{error}</p>
+              <button
+                onClick={loadPayment}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+              >
+                Retry
+              </button>
+            </div>
+          )}
+
+          {!loading && !error && html && (
             <iframe
               title="Payment Form"
               srcDoc={html}
               className="w-full h-full border-0"
               sandbox="allow-scripts allow-forms allow-same-origin allow-popups"
             />
-          )}
-
-          {/* ❌ ERROR */}
-          {status === "error" && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-600 text-sm gap-4">
-              <p>Unable to load payment form.</p>
-
-              <button
-                onClick={loadPaymentForm}
-                className="px-4 py-2 text-xs bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-              >
-                Retry
-              </button>
-            </div>
           )}
         </div>
       </div>

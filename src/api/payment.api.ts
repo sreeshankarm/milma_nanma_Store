@@ -14,15 +14,25 @@ export const transactionHistoryApi = (payload: TransactionPayload) =>
 
 
 
-export const getPaymentFormHtml = async (balance?: number) => {
-  const params = balance !== undefined ? { balance } : {};
+// export const getPaymentFormHtml = async (balance?: number) => {
+//   const params = balance !== undefined ? { balance } : {};
 
+//   const response = await api.get("/paymentform", {
+//     params,
+//     responseType: "text", // VERY IMPORTANT
+//   });
+
+//   return response.data; // HTML string
+// };
+
+
+export const getPaymentFormHtml = async (balance?: number) => {
   const response = await api.get("/paymentform", {
-    params,
-    responseType: "text", // VERY IMPORTANT
+    params: balance !== undefined ? { balance } : {},
+    responseType: "text", // IMPORTANT: because backend returns HTML
   });
 
-  return response.data; // HTML string
+  return response.data;
 };
 
 
