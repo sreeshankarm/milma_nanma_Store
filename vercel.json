@@ -1,10 +1,9 @@
 {
-  "functions": {
-    "api/**/*.ts": {
-      "runtime": "nodejs18.x"
-    }
-  },
   "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://nanmastagingapi.milma.in/api/$1"
+    },
     {
       "source": "/(.*)",
       "destination": "/index.html"
