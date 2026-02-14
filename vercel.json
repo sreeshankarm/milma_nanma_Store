@@ -1,6 +1,6 @@
 {
   "functions": {
-    "api/**/*.js": {
+    "paymentapivercel/**/*.js": {
       "runtime": "nodejs18.x"
     }
   },
