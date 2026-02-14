@@ -1,4 +1,8 @@
 export default async function handler(req: any, res: any) {
+  if (req.method !== "GET") {
+    return res.status(405).json({ message: "Method Not Allowed" });
+  }
+
   try {
     const balance = req.query.balance ?? "";
 
@@ -16,9 +20,9 @@ export default async function handler(req: any, res: any) {
     const html = await response.text();
 
     res.setHeader("Content-Type", "text/html");
-    res.status(200).send(html);
+    return res.status(200).send(html);
   } catch (error) {
     console.error("Payment proxy error:", error);
-    res.status(500).json({ message: "Payment proxy failed" });
+    return res.status(500).json({ message: "Payment proxy failed" });
   }
 }
