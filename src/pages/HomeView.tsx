@@ -58,27 +58,50 @@ export const HomeView: React.FC = () => {
   const [minDate, setMinDate] = useState("");
   const [maxDate, setMaxDate] = useState("");
 
+  // useEffect(() => {
+  //   const loadSettings = async () => {
+  //     try {
+  //       const data = await getSettingsApi();
+
+  //       const allowedDays = data?.maxallowedsupplydate ?? 7;
+
+  //       const today = new Date();
+
+  //       // MIN = Today
+  //       const min = new Date(today);
+
+  //       // MAX = Today + (allowedDays - 1)
+  //       const max = new Date(today);
+  //       max.setDate(today.getDate() + (allowedDays - 1));
+
+  //       setMinDate(min.toISOString().split("T")[0]);
+  //       setMaxDate(max.toISOString().split("T")[0]);
+
+  //       // Default selected date = today
+  //       setSupplyDate(min.toISOString().split("T")[0]);
+  //     } catch (error) {
+  //       console.error("Settings API failed:", error);
+  //     }
+  //   };
+
+  //   loadSettings();
+  // }, []);
+
   useEffect(() => {
+    const format = (date: Date) => date.toLocaleDateString("en-CA"); // YYYY-MM-DD (safe)
+
     const loadSettings = async () => {
       try {
         const data = await getSettingsApi();
-
-        const allowedDays = data?.maxallowedsupplydate ?? 7;
+        const days = data?.maxallowedsupplydate ?? 7;
 
         const today = new Date();
+        const max = new Date();
+        max.setDate(today.getDate() + (days - 1));
 
-        // MIN = Today
-        const min = new Date(today);
-
-        // MAX = Today + (allowedDays - 1)
-        const max = new Date(today);
-        max.setDate(today.getDate() + (allowedDays - 1));
-
-        setMinDate(min.toISOString().split("T")[0]);
-        setMaxDate(max.toISOString().split("T")[0]);
-
-        // Default selected date = today
-        setSupplyDate(min.toISOString().split("T")[0]);
+        setMinDate(format(today));
+        setMaxDate(format(max));
+        setSupplyDate(format(today));
       } catch (error) {
         console.error("Settings API failed:", error);
       }

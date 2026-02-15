@@ -61,29 +61,57 @@ export default function ProductModal({
   const [maxDate, setMaxDate] = useState("");
   const [shiftText, setShiftText] = useState<Record<string, string>>({});
 
-  useEffect(() => {
-    const loadSettings = async () => {
-      try {
-        const data = await getSettingsApi();
+  // useEffect(() => {
+  //   const loadSettings = async () => {
+  //     try {
+  //       const data = await getSettingsApi();
 
-        const allowedDays = data?.maxallowedsupplydate ?? 7;
-        const today = new Date();
+  //       const allowedDays = data?.maxallowedsupplydate ?? 7;
+  //       const today = new Date();
 
-        const min = new Date(today);
-        const max = new Date(today);
-        max.setDate(today.getDate() + (allowedDays - 1));
+  //       const min = new Date(today);
+  //       const max = new Date(today);
+  //       max.setDate(today.getDate() + (allowedDays - 1));
 
-        setMinDate(min.toISOString().split("T")[0]);
-        setMaxDate(max.toISOString().split("T")[0]);
+  //       setMinDate(min.toISOString().split("T")[0]);
+  //       setMaxDate(max.toISOString().split("T")[0]);
 
-        setShiftText(data.shiftcodetext || {});
-      } catch (error) {
-        console.error("Settings load failed:", error);
-      }
-    };
+  //       setShiftText(data.shiftcodetext || {});
+  //     } catch (error) {
+  //       console.error("Settings load failed:", error);
+  //     }
+  //   };
 
-    loadSettings();
-  }, []);
+  //   loadSettings();
+  // }, []);
+
+
+  
+useEffect(() => {
+  const formatDate = (date: Date) =>
+    date.toLocaleDateString("en-CA"); // gives YYYY-MM-DD safely
+
+  const loadSettings = async () => {
+    try {
+      const data = await getSettingsApi();
+
+      const days = data?.maxallowedsupplydate ?? 7;
+      const today = new Date();
+
+      const min = new Date(today);
+      const max = new Date(today);
+      max.setDate(today.getDate() + (days - 1));
+
+      setMinDate(formatDate(min));
+      setMaxDate(formatDate(max));
+      setShiftText(data?.shiftcodetext || {});
+    } catch (error) {
+      console.error("Settings load failed:", error);
+    }
+  };
+
+  loadSettings();
+}, []);
 
   /* 🔥 CALL PRODUCT DETAILS API */
   useEffect(() => {
