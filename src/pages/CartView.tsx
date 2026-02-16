@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import {
-  Sun,
-  Moon,
-  Calendar,
-  Clock,
+  // Sun,
+  // Moon,
+  // Calendar,
+  // Clock,
   ChevronRight,
   ShoppingBag,
-  CheckCircle,
+  // CheckCircle,
 } from "lucide-react";
 import CartList from "../components/CartList";
 // import { useStore } from "../context/store/store";
