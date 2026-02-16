@@ -13,6 +13,8 @@ import { CartContext } from "../../context/cart/CartContext";
 import type { CartItem } from "../../types/cart";
 import { normalizeCart } from "../../utils/cartNormalizer";
 import { toast } from "react-toastify";
+import { getProductsApi } from "../../api/product.api";
+
 
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   // const [cart, setCart] = useState<ViewCartResponse["output"] | null>(null);
@@ -27,22 +29,50 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   //   setLoading(false);
   // };
 
+  // const loadCart = async () => {
+  //   setLoading(true);
+
+  //   const { data } = await viewCartApi();
+
+  //   if (!data?.output || Object.keys(data.output).length === 0) {
+  //     // 🔥 when cart empty
+  //     setCart([]);
+  //     setLoading(false);
+  //     return;
+  //   }
+
+  //   const normalized = normalizeCart(data.output);
+  //   setCart(normalized);
+  //   setLoading(false);
+  // };
+
   const loadCart = async () => {
-    setLoading(true);
+  setLoading(true);
 
-    const { data } = await viewCartApi();
+  try {
+    const { data: cartData } = await viewCartApi();
 
-    if (!data?.output || Object.keys(data.output).length === 0) {
-      // 🔥 when cart empty
+    if (!cartData?.output || Object.keys(cartData.output).length === 0) {
       setCart([]);
-      setLoading(false);
       return;
     }
 
-    const normalized = normalizeCart(data.output);
+    // ✅ Get supplydate from cart response
+    const supplydate = Object.keys(cartData.output)[0];
+
+    const { data: productData } = await getProductsApi(supplydate);
+
+    const normalized = normalizeCart(
+      cartData.output,
+      productData.proddefaultratetypedata
+    );
+
     setCart(normalized);
+
+  } finally {
     setLoading(false);
-  };
+  }
+};
 
   // const addToCart = async (
   //   supplydate: string,

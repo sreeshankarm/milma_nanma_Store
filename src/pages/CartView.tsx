@@ -40,10 +40,11 @@ export default function CartView() {
     decreaseQty,
     placeOrder,
     updateCart,
+     loading,
   } = useCart();
 
-  const [selectedDate, setSelectedDate] = useState(0);
-  const [shift, setShift] = useState<"morning" | "evening">("morning");
+  // const [selectedDate, setSelectedDate] = useState(0);
+  // const [shift, setShift] = useState<"morning" | "evening">("morning");
   const [editItem, setEditItem] = useState<CartItem | null>(null);
   const [confirmLoading, setConfirmLoading] = useState(false);
 
@@ -53,15 +54,15 @@ export default function CartView() {
     loadCart();
   }, []);
 
-  const dates = [
-    { day: "Mon", date: 8 },
-    { day: "Tue", date: 9 },
-    { day: "Wed", date: 10 },
-    { day: "Thu", date: 11 },
-    { day: "Fri", date: 12 },
-    { day: "Sat", date: 13 },
-    { day: "Sun", date: 14 },
-  ];
+  // const dates = [
+  //   { day: "Mon", date: 8 },
+  //   { day: "Tue", date: 9 },
+  //   { day: "Wed", date: 10 },
+  //   { day: "Thu", date: 11 },
+  //   { day: "Fri", date: 12 },
+  //   { day: "Sat", date: 13 },
+  //   { day: "Sun", date: 14 },
+  // ];
 
   // const total = cart.reduce(
   //   (sum: number, item: CartItem) => sum + item.product.price * item.quantity,
@@ -138,14 +139,41 @@ export default function CartView() {
       <h1 className="text-2xl font-bold">Your Cart</h1>
 
       {/* ------------------ EMPTY CART UI ------------------ */}
-      {cart.length === 0 && (
+      {/* {cart.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <ShoppingBag size={60} className="text-gray-400 mb-4" />
+          <p className="text-gray-500 text-lg font-medium">Empty Cart</p>
+        </div>
+      )} */}
+
+
+            {/* ------------------ LOADING UI ------------------ */}
+      {loading && (
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <div className="h-10 w-10 border-4 border-[#8e2d26] border-t-transparent rounded-full animate-spin mb-4" />
+          <p className="text-gray-500 font-medium">Loading cart...</p>
+        </div>
+      )}
+
+      {/* ------------------ EMPTY CART UI ------------------ */}
+      {!loading && cart.length === 0 && (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <ShoppingBag size={60} className="text-gray-400 mb-4" />
           <p className="text-gray-500 text-lg font-medium">Empty Cart</p>
         </div>
       )}
 
-      {cart.length > 0 && (
+      {/* -------- CONFIRM FULL PAGE LOADER -------- */}
+      {confirmLoading && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl shadow-xl px-8 py-6 flex flex-col items-center gap-4">
+            <div className="h-10 w-10 border-4 border-[#8e2d26] border-t-transparent rounded-full animate-spin" />
+            <p className="text-gray-700 font-semibold">Placing your order...</p>
+          </div>
+        </div>
+      )}
+
+      {!loading && cart.length > 0 && (
         <>
           {/* Cart Items */}
           <CartList
@@ -255,7 +283,7 @@ export default function CartView() {
           )}
 
           {/* Delivery Date */}
-          <div className="bg-white border border-gray-200 rounded-xl shadow p-4">
+          {/* <div className="bg-white border border-gray-200 rounded-xl shadow p-4">
             <p className="font-semibold flex items-center gap-2">
               <Calendar
                 size={16}
@@ -282,10 +310,10 @@ export default function CartView() {
                 </button>
               ))}
             </div>
-          </div>
+          </div> */}
 
           {/* Shift Selection */}
-          <div className="bg-white border border-gray-200 rounded-xl shadow p-4 space-y-3">
+          {/* <div className="bg-white border border-gray-200 rounded-xl shadow p-4 space-y-3">
             <p className="font-semibold flex items-center gap-2">
               <Clock
                 size={16}
@@ -294,7 +322,6 @@ export default function CartView() {
               <span>Shift Selection</span>
             </p>
 
-            {/* Morning */}
             <div
               onClick={() => setShift("morning")}
               className={`flex items-center justify-between p-4 rounded-xl border cursor-pointer 
@@ -313,7 +340,6 @@ export default function CartView() {
               )}
             </div>
 
-            {/* Evening */}
             <div
               onClick={() => setShift("evening")}
               className={`flex items-center justify-between p-4 rounded-xl border cursor-pointer 
@@ -333,7 +359,7 @@ export default function CartView() {
                 <CheckCircle size={20} className="text-blue-500" />
               )}
             </div>
-          </div>
+          </div> */}
 
           {/* Totals */}
           <div className="bg-white border border-gray-200 rounded-xl shadow p-4 space-y-2">
@@ -367,7 +393,7 @@ export default function CartView() {
             <ChevronRight size={20} />
           </button> */}
 
-          <button
+          {/* <button
             onClick={handleConfirm}
             disabled={confirmLoading}
             className={`w-full bg-[#8e2d26] text-white py-3 rounded-xl text-lg font-semibold
@@ -379,12 +405,23 @@ export default function CartView() {
               <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
             )}
 
-            {/* <span>Confirm Indent</span> */}
             <span>
               {confirmLoading ? "Placing Order..." : "Confirm Indent"}
             </span>
 
             {!confirmLoading && <ChevronRight size={20} />}
+          </button> */}
+
+
+             <button
+            onClick={handleConfirm}
+            disabled={confirmLoading}
+            className="w-full bg-[#8e2d26] text-white py-3 rounded-xl text-lg font-semibold
+             flex items-center justify-center gap-2 transition
+             hover:bg-[#b91c1c] disabled:opacity-60"
+          >
+            Confirm Indent
+            <ChevronRight size={20} />
           </button>
         </>
       )}

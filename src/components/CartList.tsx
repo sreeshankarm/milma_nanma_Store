@@ -40,11 +40,24 @@ export default function CartList({
           key={item.cartid}
           className="bg-white border border-gray-200 rounded-xl shadow p-4 flex items-center gap-4"
         >
-          <img
+          {/* <img
             // src={item.product.image}
             // alt={item.product.name}
             className="w-16 h-16 object-contain"
-          />
+          /> */}
+
+              <div className="relative">
+            <img
+              src={item.imagepath || "/placeholder.png"}
+              alt={item.productname}
+              className="w-16 h-16 object-contain"
+            />
+
+            {/* 🔥 SMALL BADGE */}
+            <span className="absolute -top-2 -left-2 bg-gray-600 text-white text-[10px] px-2 py-0.5 rounded-full shadow">
+              #{item.prod_code}
+            </span>
+          </div>
 
           <div className="flex-1">
             <h3 className="font-semibold">{item.productname}</h3>
