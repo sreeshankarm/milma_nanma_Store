@@ -12,9 +12,24 @@ const api = axios.create({
   },
 });
 
+// api.interceptors.request.use((config) => {
+//   const access = token.getAccess();
+//   const env = localStorage.getItem("environment");
+
+//   if (access) {
+//     config.headers.Authorization = `Bearer ${access}`;
+//   }
+
+//   if (env) {
+//     config.headers.environment = env;
+//   }
+//   return config;
+// });
+
+/* ---------- REQUEST INTERCEPTOR ---------- */
 api.interceptors.request.use((config) => {
   const access = token.getAccess();
-  const env = localStorage.getItem("environment");
+  const env = token.getEnvironment();
 
   if (access) {
     config.headers.Authorization = `Bearer ${access}`;
@@ -23,18 +38,32 @@ api.interceptors.request.use((config) => {
   if (env) {
     config.headers.environment = env;
   }
+
   return config;
 });
 
+// api.interceptors.response.use(
+//   (res) => res,
+//   (err) => {
+//     if (err.response?.status === 401) {
+//       token.clear();
+//       window.location.href = "/signin";
+//     }
+//     return Promise.reject(err);
+//   },
+// );
+
+/* ---------- RESPONSE INTERCEPTOR ---------- */
 api.interceptors.response.use(
-  (res) => res,
-  (err) => {
-    if (err.response?.status === 401) {
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
       token.clear();
       window.location.href = "/signin";
     }
-    return Promise.reject(err);
-  },
+
+    return Promise.reject(error);
+  }
 );
 
 export default api;
