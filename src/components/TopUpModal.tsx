@@ -429,20 +429,13 @@ export const TopUpModal: React.FC<Props> = ({
             </div>
           )}
 
-          {!loading && !error && html && (
-            // <iframe
-            //   title="Payment Form"
-            //   srcDoc={html}
-            //   className="w-full h-full border-0"
-            //   sandbox="allow-scripts allow-forms allow-same-origin allow-popups"
-            // />
+      
             <iframe
   title="Payment Form"
   srcDoc={html}
   className="w-full h-full border-0"
   sandbox="allow-scripts allow-forms allow-same-origin allow-popups allow-top-navigation"
 />
-          )}
         </div>
       </div>
     </div>
