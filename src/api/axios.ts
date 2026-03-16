@@ -142,9 +142,68 @@
 
 
 
+// import axios from "axios";
+// import type { AxiosError, InternalAxiosRequestConfig } from "axios";
+// import { token } from "../utils/token";
+
+// const api = axios.create({
+//   baseURL: import.meta.env.VITE_API_BASE_URL || "/api",
+//   headers: {
+//     Accept: "application/json",
+//     "Content-Type": "application/json",
+//   },
+// });
+
+// /* REQUEST INTERCEPTOR */
+// api.interceptors.request.use(
+//   (config: InternalAxiosRequestConfig) => {
+//     const accessToken = token.getAccess();
+//     const environment = token.getEnvironment();
+
+//     if (accessToken) {
+//       config.headers.Authorization = `Bearer ${accessToken}`;
+//     }
+
+//     if (environment) {
+//       config.headers.environment = environment;
+//     }
+
+//     return config;
+//   },
+//   (error: AxiosError) => Promise.reject(error)
+// );
+
+// /* RESPONSE INTERCEPTOR */
+// api.interceptors.response.use(
+//   (response) => response,
+//   async (error: AxiosError) => {
+//     if (error.response?.status === 401) {
+//       if (window.location.pathname !== "/signin") {
+//         token.clear();
+//         window.location.replace("/signin");
+//       }
+//     }
+
+//     return Promise.reject(error);
+//   }
+// );
+
+// export default api;
+
+
+
+
+
+
+
+
 import axios from "axios";
 import type { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { token } from "../utils/token";
+
+/* =========================================
+   AXIOS INSTANCE
+========================================= */
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || "/api",
@@ -154,26 +213,40 @@ const api = axios.create({
   },
 });
 
-/* REQUEST INTERCEPTOR */
+/* =========================================
+   REQUEST INTERCEPTOR
+   - Adds Authorization
+   - Adds environment header
+========================================= */
+
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const accessToken = token.getAccess();
     const environment = token.getEnvironment();
 
+    /* Authorization header */
     if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
+      config.headers["Authorization"] = `Bearer ${accessToken}`;
     }
 
+    /* Environment header */
     if (environment) {
-      config.headers.environment = environment;
+      config.headers["environment"] = environment;
     }
+
+    /* Helps proxies like Vercel / Cloudflare */
+    config.headers["X-Requested-With"] = "XMLHttpRequest";
 
     return config;
   },
   (error: AxiosError) => Promise.reject(error)
 );
 
-/* RESPONSE INTERCEPTOR */
+/* =========================================
+   RESPONSE INTERCEPTOR
+   - Handles expired token
+========================================= */
+
 api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
