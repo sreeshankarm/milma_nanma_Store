@@ -353,8 +353,106 @@
 
 
 
+// import { X } from "lucide-react";
+// import { useEffect, useState } from "react";
+// import { getPaymentFormHtml } from "../api/payment.api";
+
+// interface Props {
+//   open: boolean;
+//   onClose: () => void;
+//   balance: number;
+// }
+
+// export const TopUpModal: React.FC<Props> = ({
+//   open,
+//   onClose,
+//   balance,
+// }) => {
+//   const [html, setHtml] = useState("");
+//   const [loading, setLoading] = useState(false);
+//   const [error, setError] = useState("");
+
+//   const loadPayment = async () => {
+//     try {
+//       setLoading(true);
+//       setError("");
+
+//       const data = await getPaymentFormHtml(balance);
+
+//       if (!data) throw new Error("Empty response");
+
+//       setHtml(data);
+//     } catch (err) {
+//       console.error("Payment form error:", err);
+//       setError("Unable to load payment form.");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   useEffect(() => {
+//     if (open) loadPayment();
+//   }, [open]);
+
+//   if (!open) return null;
+
+//   return (
+//     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+//       <div className="bg-white w-full max-w-4xl h-[90vh] rounded-xl shadow-xl flex flex-col overflow-hidden">
+
+//         {/* Header */}
+//         <div className="flex justify-between items-center px-6 py-4 bg-[#8e2d26] text-white">
+//           <h2 className="font-semibold text-lg">Payment</h2>
+//           <button onClick={onClose}>
+//             <X size={20} />
+//           </button>
+//         </div>
+
+//         {/* Body */}
+//         <div className="flex-1 relative">
+
+//           {loading && (
+//             <div className="absolute inset-0 flex items-center justify-center bg-white">
+//               <div className="w-8 h-8 border-4 border-[#8e2d26] border-t-transparent rounded-full animate-spin" />
+//             </div>
+//           )}
+
+//           {error && (
+//             <div className="flex flex-col items-center justify-center h-full gap-4 text-gray-600">
+//               <p>{error}</p>
+//               <button
+//                 onClick={loadPayment}
+//                 className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+//               >
+//                 Retry
+//               </button>
+//             </div>
+//           )}
+
+//           {!loading && !error && html && (
+//             <iframe
+//               title="Payment Form"
+//               srcDoc={html}
+//               className="w-full h-full border-0"
+//               sandbox="allow-scripts allow-forms allow-same-origin allow-popups allow-top-navigation"
+//             />
+//           )}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+
+
+
+
+
+
+
+
 import { X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { getPaymentFormHtml } from "../api/payment.api";
 
 interface Props {
@@ -371,6 +469,8 @@ export const TopUpModal: React.FC<Props> = ({
   const [html, setHtml] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const loadedRef = useRef(false);
 
   const loadPayment = async () => {
     try {
@@ -391,8 +491,17 @@ export const TopUpModal: React.FC<Props> = ({
   };
 
   useEffect(() => {
-    if (open) loadPayment();
+    if (open && !loadedRef.current) {
+      loadedRef.current = true;
+      loadPayment();
+    }
   }, [open]);
+
+  const handleClose = () => {
+    loadedRef.current = false;
+    setHtml("");
+    onClose();
+  };
 
   if (!open) return null;
 
@@ -403,7 +512,7 @@ export const TopUpModal: React.FC<Props> = ({
         {/* Header */}
         <div className="flex justify-between items-center px-6 py-4 bg-[#8e2d26] text-white">
           <h2 className="font-semibold text-lg">Payment</h2>
-          <button onClick={onClose}>
+          <button onClick={handleClose}>
             <X size={20} />
           </button>
         </div>
@@ -431,10 +540,11 @@ export const TopUpModal: React.FC<Props> = ({
 
           {!loading && !error && html && (
             <iframe
+              key="payment-frame"
               title="Payment Form"
               srcDoc={html}
               className="w-full h-full border-0"
-              sandbox="allow-scripts allow-forms allow-same-origin allow-popups allow-top-navigation"
+              sandbox="allow-scripts allow-forms allow-same-origin allow-popups"
             />
           )}
         </div>
