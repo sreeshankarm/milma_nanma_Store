@@ -201,10 +201,6 @@ import axios from "axios";
 import type { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { token } from "../utils/token";
 
-/* =========================================
-   AXIOS INSTANCE
-========================================= */
-
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || "/api",
   headers: {
@@ -213,28 +209,22 @@ const api = axios.create({
   },
 });
 
-/* =========================================
-   REQUEST INTERCEPTOR
-   - Adds Authorization
-   - Adds environment header
-========================================= */
-
+/* REQUEST INTERCEPTOR */
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const accessToken = token.getAccess();
     const environment = token.getEnvironment();
 
-    /* Authorization header */
     if (accessToken) {
       config.headers["Authorization"] = `Bearer ${accessToken}`;
+      config.headers["authorization"] = `Bearer ${accessToken}`; // fallback
     }
 
-    /* Environment header */
     if (environment) {
       config.headers["environment"] = environment;
     }
 
-    /* Helps proxies like Vercel / Cloudflare */
+    /* Helps Laravel detect AJAX requests */
     config.headers["X-Requested-With"] = "XMLHttpRequest";
 
     return config;
@@ -242,11 +232,7 @@ api.interceptors.request.use(
   (error: AxiosError) => Promise.reject(error)
 );
 
-/* =========================================
-   RESPONSE INTERCEPTOR
-   - Handles expired token
-========================================= */
-
+/* RESPONSE INTERCEPTOR */
 api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
