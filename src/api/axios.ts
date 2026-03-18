@@ -147,10 +147,10 @@ import type { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { token } from "../utils/token";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "https://nanmastagingapi.milma.in", // 👈 Use direct API URL on Vercel
-  withCredentials: true, // 👈 CRITICAL: Enable cookie transmission for auth headers
+  baseURL: import.meta.env.VITE_API_BASE_URL || "/api",
   headers: {
     Accept: "application/json",
+    "Content-Type": "application/json",
   },
 });
 
@@ -160,25 +160,12 @@ api.interceptors.request.use(
     const accessToken = token.getAccess();
     const environment = token.getEnvironment();
 
-    console.log("🔍 Request to:", config.url);
-    console.log("📋 Access Token:", accessToken ? "✅ Present" : "❌ Missing");
-    console.log("🌍 Environment:", environment ? `✅ ${environment}` : "❌ Missing");
-
-    if (!accessToken) {
-      console.warn("⚠️ WARNING: No access token found! Request will fail on backend.");
-    }
-
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
 
     if (environment) {
       config.headers.environment = environment;
-    }
-
-    // Set Content-Type only for POST/PUT/PATCH requests with data
-    if ((config.method === "post" || config.method === "put" || config.method === "patch") && config.data && !config.headers["Content-Type"]) {
-      config.headers["Content-Type"] = "application/json";
     }
 
     return config;
