@@ -161,7 +161,7 @@ api.interceptors.request.use(
     const environment = token.getEnvironment();
 
     if (accessToken) {
-      config.headers['Authorization'] = `Bearer ${accessToken}`;
+      config.headers.Authorization = `Bearer ${accessToken}`;
     }
 
     if (environment) {
