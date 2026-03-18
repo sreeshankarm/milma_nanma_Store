@@ -160,6 +160,15 @@ api.interceptors.request.use(
     const accessToken = token.getAccess();
     const environment = token.getEnvironment();
 
+    // Debug logging
+    console.log("[AXIOS DEBUG] 🔍 Request:", config.url);
+    console.log("[AXIOS DEBUG] 🔐 Token:", accessToken ? "✅ FOUND" : "❌ NOT FOUND");
+    console.log("[AXIOS DEBUG] 🌍 Env:", environment ? `✅ ${environment}` : "❌ NOT FOUND");
+
+    if (!accessToken) {
+      console.warn("[AXIOS DEBUG] ⚠️ CRITICAL: Access token is missing! Backend will return 'Undefined index: authorization'");
+    }
+
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
