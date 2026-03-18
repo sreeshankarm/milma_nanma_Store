@@ -147,10 +147,10 @@ import type { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { token } from "../utils/token";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "/api",
+  baseURL: "/api", // Use Vercel rewrite (avoids CORS)
+  withCredentials: true, // 👈 CRITICAL: Enable cookie transmission for auth headers
   headers: {
     Accept: "application/json",
-    "Content-Type": "application/json",
   },
 });
 
@@ -166,6 +166,11 @@ api.interceptors.request.use(
 
     if (environment) {
       config.headers.environment = environment;
+    }
+
+    // Set Content-Type only for POST/PUT/PATCH requests with data
+    if ((config.method === "post" || config.method === "put" || config.method === "patch") && config.data && !config.headers["Content-Type"]) {
+      config.headers["Content-Type"] = "application/json";
     }
 
     return config;
