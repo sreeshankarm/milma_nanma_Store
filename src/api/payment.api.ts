@@ -41,13 +41,16 @@ export const transactionHistoryApi = (payload: TransactionPayload) =>
 
 
 
-export const getPaymentFormHtml = async (balance: number) => {
+export const getPaymentFormHtml = async (balance?: number) => {
+  const params = balance !== undefined ? { balance } : {};
+  
   const response = await api.get("/paymentform", {
-    params: { balance },
+    params,
     headers: {
       Accept: "text/html",
     },
     responseType: "text", // 👈 VERY IMPORTANT - tells axios to return raw HTML
+    timeout: 10000, // Add timeout to prevent hanging on Vercel
   });
 
   return response.data; // this will be raw HTML string
