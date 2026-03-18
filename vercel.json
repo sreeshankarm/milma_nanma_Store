@@ -1,11 +1,11 @@
 {
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "https://nanmastagingapi.milma.in/api/$1"
+      "source": "/api/:path*",
+      "destination": "https://nanmastagingapi.milma.in/api/:path*"
     },
     {
-      "source": "/(.*)",
+      "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
   ]

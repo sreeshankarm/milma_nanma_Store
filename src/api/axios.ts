@@ -142,61 +142,6 @@
 
 
 
-// import axios from "axios";
-// import type { AxiosError, InternalAxiosRequestConfig } from "axios";
-// import { token } from "../utils/token";
-
-// const api = axios.create({
-//   baseURL: import.meta.env.VITE_API_BASE_URL || "/api",
-//   headers: {
-//     Accept: "application/json",
-//     "Content-Type": "application/json",
-//   },
-// });
-
-// /* REQUEST INTERCEPTOR */
-// api.interceptors.request.use(
-//   (config: InternalAxiosRequestConfig) => {
-//     const accessToken = token.getAccess();
-//     const environment = token.getEnvironment();
-
-//     if (accessToken) {
-//       config.headers.Authorization = `Bearer ${accessToken}`;
-//     }
-
-//     if (environment) {
-//       config.headers.environment = environment;
-//     }
-
-//     return config;
-//   },
-//   (error: AxiosError) => Promise.reject(error)
-// );
-
-// /* RESPONSE INTERCEPTOR */
-// api.interceptors.response.use(
-//   (response) => response,
-//   async (error: AxiosError) => {
-//     if (error.response?.status === 401) {
-//       if (window.location.pathname !== "/signin") {
-//         token.clear();
-//         window.location.replace("/signin");
-//       }
-//     }
-
-//     return Promise.reject(error);
-//   }
-// );
-
-// export default api;
-
-
-
-
-
-
-
-
 import axios from "axios";
 import type { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { token } from "../utils/token";
@@ -216,16 +161,12 @@ api.interceptors.request.use(
     const environment = token.getEnvironment();
 
     if (accessToken) {
-      config.headers["Authorization"] = `Bearer ${accessToken}`;
-      config.headers["authorization"] = `Bearer ${accessToken}`; // fallback
+      config.headers.Authorization = `Bearer ${accessToken}`;
     }
 
     if (environment) {
-      config.headers["environment"] = environment;
+      config.headers.environment = environment;
     }
-
-    /* Helps Laravel detect AJAX requests */
-    config.headers["X-Requested-With"] = "XMLHttpRequest";
 
     return config;
   },
