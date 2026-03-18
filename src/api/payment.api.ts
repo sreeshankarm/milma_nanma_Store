@@ -41,11 +41,9 @@ export const transactionHistoryApi = (payload: TransactionPayload) =>
 
 
 
-export const getPaymentFormHtml = async (balance?: number) => {
-  const params = balance !== undefined ? { balance } : {};
-  
+export const getPaymentFormHtml = async (balance: number) => {
   const response = await api.get("/paymentform", {
-    params,
+    params: { balance },
     headers: {
       Accept: "text/html",
     },

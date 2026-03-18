@@ -147,8 +147,8 @@ import type { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { token } from "../utils/token";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "/api",
-  withCredentials: true, // 👈 CRITICAL: Send cookies with requests
+  baseURL: import.meta.env.VITE_API_BASE_URL || "/api", // 👈 Use Vercel rewrite to avoid CORS
+  withCredentials: true, // Send cookies with requests
   headers: {
     Accept: "application/json",
   },
@@ -160,17 +160,15 @@ api.interceptors.request.use(
     const accessToken = token.getAccess();
     const environment = token.getEnvironment();
 
-    // Debug logging
-    console.log("[AXIOS DEBUG] 🔍 Request:", config.url);
-    console.log("[AXIOS DEBUG] 🔐 Token:", accessToken ? "✅ FOUND" : "❌ NOT FOUND");
-    console.log("[AXIOS DEBUG] 🌍 Env:", environment ? `✅ ${environment}` : "❌ NOT FOUND");
-
-    if (!accessToken) {
-      console.warn("[AXIOS DEBUG] ⚠️ CRITICAL: Access token is missing! Backend will return 'Undefined index: authorization'");
-    }
+    console.log("[VERCEL DEBUG] 🔍 URL:", config.url);
+    console.log("[VERCEL DEBUG] 🔐 Token:", accessToken ? "✅ PRESENT" : "❌ MISSING");
+    console.log("[VERCEL DEBUG] 🌍 Env:", environment || "❌ MISSING");
 
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
+      console.log("[VERCEL DEBUG] ✅ Authorization header SET");
+    } else {
+      console.warn("[VERCEL DEBUG] ❌ Authorization header NOT SET - Token missing!");
     }
 
     if (environment) {

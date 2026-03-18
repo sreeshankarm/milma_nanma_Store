@@ -107,70 +107,33 @@ const COOKIE_OPTIONS: Cookies.CookieAttributes = {
 
 export const token = {
   getAccess(): string | undefined {
-    // Try cookies first, fallback to localStorage for Vercel compatibility
-    const fromCookie = Cookies.get(ACCESS_KEY);
-    if (fromCookie) return fromCookie;
-    
-    if (typeof window !== "undefined") {
-      return localStorage.getItem(ACCESS_KEY) || undefined;
-    }
-    return undefined;
+    return Cookies.get(ACCESS_KEY);
   },
 
   getRefresh(): string | undefined {
-    // Try cookies first, fallback to localStorage
-    const fromCookie = Cookies.get(REFRESH_KEY);
-    if (fromCookie) return fromCookie;
-    
-    if (typeof window !== "undefined") {
-      return localStorage.getItem(REFRESH_KEY) || undefined;
-    }
-    return undefined;
+    return Cookies.get(REFRESH_KEY);
   },
 
   getEnvironment(): string | undefined {
-    // Try cookies first, fallback to localStorage
-    const fromCookie = Cookies.get(ENV_KEY);
-    if (fromCookie) return fromCookie;
-    
-    if (typeof window !== "undefined") {
-      return localStorage.getItem(ENV_KEY) || undefined;
-    }
-    return undefined;
+    return Cookies.get(ENV_KEY);
   },
 
   set(data: TokenResponse) {
-    // Store in both cookies AND localStorage for maximum compatibility
     Cookies.set(ACCESS_KEY, data.access_token, COOKIE_OPTIONS);
-    if (typeof window !== "undefined") {
-      localStorage.setItem(ACCESS_KEY, data.access_token);
-    }
 
     if (data.refresh_token) {
       Cookies.set(REFRESH_KEY, data.refresh_token, {
         ...COOKIE_OPTIONS,
         expires: 30, // refresh token longer
       });
-      if (typeof window !== "undefined") {
-        localStorage.setItem(REFRESH_KEY, data.refresh_token);
-      }
     }
 
     Cookies.set(ENV_KEY, data.environment, COOKIE_OPTIONS);
-    if (typeof window !== "undefined") {
-      localStorage.setItem(ENV_KEY, data.environment);
-    }
   },
 
   clear() {
     Cookies.remove(ACCESS_KEY);
     Cookies.remove(REFRESH_KEY);
     Cookies.remove(ENV_KEY);
-    
-    if (typeof window !== "undefined") {
-      localStorage.removeItem(ACCESS_KEY);
-      localStorage.removeItem(REFRESH_KEY);
-      localStorage.removeItem(ENV_KEY);
-    }
   },
 };
