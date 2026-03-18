@@ -147,7 +147,7 @@ import type { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { token } from "../utils/token";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "/api",
+  baseURL: import.meta.env.VITE_API_BASE_URL || "https://nanmastagingapi.milma.in", // 👈 Use direct API URL on Vercel
   withCredentials: true, // 👈 CRITICAL: Enable cookie transmission for auth headers
   headers: {
     Accept: "application/json",
