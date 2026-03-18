@@ -147,8 +147,8 @@ import type { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { token } from "../utils/token";
 
 const api = axios.create({
-  baseURL: "/api", // Use Vercel rewrite (avoids CORS)
-  withCredentials: true, // 👈 CRITICAL: Enable cookie transmission for auth headers
+  baseURL: import.meta.env.VITE_API_BASE_URL || "/api",
+  withCredentials: true, // 👈 CRITICAL: Send cookies with requests
   headers: {
     Accept: "application/json",
   },
