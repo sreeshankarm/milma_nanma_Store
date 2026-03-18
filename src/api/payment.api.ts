@@ -44,6 +44,9 @@ export const transactionHistoryApi = (payload: TransactionPayload) =>
 export const getPaymentFormHtml = async (balance: number) => {
   const response = await api.get("/paymentform", {
     params: { balance },
+    headers: {
+      Accept: "text/html",
+    },
     responseType: "text", // 👈 VERY IMPORTANT - tells axios to return raw HTML
   });
 
