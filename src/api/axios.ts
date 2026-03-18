@@ -147,10 +147,10 @@ import type { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { token } from "../utils/token";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "/api", // 👈 Use Vercel rewrite to avoid CORS
-  withCredentials: true, // Send cookies with requests
+  baseURL: import.meta.env.VITE_API_BASE_URL || "/api",
   headers: {
     Accept: "application/json",
+    "Content-Type": "application/json",
   },
 });
 
@@ -160,24 +160,12 @@ api.interceptors.request.use(
     const accessToken = token.getAccess();
     const environment = token.getEnvironment();
 
-    console.log("[VERCEL DEBUG] 🔍 URL:", config.url);
-    console.log("[VERCEL DEBUG] 🔐 Token:", accessToken ? "✅ PRESENT" : "❌ MISSING");
-    console.log("[VERCEL DEBUG] 🌍 Env:", environment || "❌ MISSING");
-
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
-      console.log("[VERCEL DEBUG] ✅ Authorization header SET");
-    } else {
-      console.warn("[VERCEL DEBUG] ❌ Authorization header NOT SET - Token missing!");
     }
 
     if (environment) {
       config.headers.environment = environment;
-    }
-
-    // Set Content-Type only for POST/PUT/PATCH requests with data
-    if ((config.method === "post" || config.method === "put" || config.method === "patch") && config.data && !config.headers["Content-Type"]) {
-      config.headers["Content-Type"] = "application/json";
     }
 
     return config;

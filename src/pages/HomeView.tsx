@@ -13,12 +13,13 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 // import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { TopUpModal } from "../components/TopUpModal";
+// import { TopUpModal } from "../components/TopUpModal";
 import { useProduct } from "../context/product/useProduct";
 import type { Product } from "../types/product";
 import { useCart } from "../context/cart/useCart";
 import { useProfile } from "../context/profile/useProfile";
 import { getSettingsApi } from "../api/settings.api";
+import { getPaymentFormHtml } from "../api/payment.api";
 
 export const HomeView: React.FC = () => {
   const { profile } = useProfile();
@@ -32,7 +33,7 @@ export const HomeView: React.FC = () => {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selected, setSelected] = useState<Product | null>(null);
-  const [showTopUp, setShowTopUp] = useState(false);
+  // const [showTopUp, setShowTopUp] = useState(false);
   // ✅ Supply Date State
   // const [supplyDate, setSupplyDate] = useState("2026-01-07");
   const getToday = () => {
@@ -110,11 +111,29 @@ export const HomeView: React.FC = () => {
     loadSettings();
   }, []);
 
+  const handleTopUp = async () => {
+  const newTab = window.open("", "_blank"); // open immediately
+
+  try {
+    const data = await getPaymentFormHtml(balance);
+
+    if (!data) throw new Error("Empty response");
+
+    const blob = new Blob([data], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
+
+    if (newTab) newTab.location.href = url;
+  } catch (err) {
+    if (newTab) newTab.close();
+    toast.error("Payment failed");
+  }
+};
+
   return (
     <div className="p-4 pb-28 space-y-8 animate-fade-in">
       {/* Wallet / Balance Card */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <WalletCard balance={balance} onTopUp={() => setShowTopUp(true)} />
+        <WalletCard balance={balance} onTopUp={handleTopUp} />
 
         <QuickActions
           repeatLastOrder={() => navigate("/cart")}
@@ -204,11 +223,11 @@ export const HomeView: React.FC = () => {
         </div>
       )}
 
-      <TopUpModal
+      {/* <TopUpModal
         open={showTopUp}
         onClose={() => setShowTopUp(false)}
         balance={balance}
-      />
+      /> */}
 
       {/* {selected && (
         <ProductModal
