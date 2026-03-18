@@ -148,6 +148,7 @@ import { token } from "../utils/token";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || "/api",
+  withCredentials: true, // 👈 CRITICAL: Enable cookie transmission for auth headers
   headers: {
     Accept: "application/json",
   },
@@ -158,6 +159,14 @@ api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const accessToken = token.getAccess();
     const environment = token.getEnvironment();
+
+    console.log("🔍 Request to:", config.url);
+    console.log("📋 Access Token:", accessToken ? "✅ Present" : "❌ Missing");
+    console.log("🌍 Environment:", environment ? `✅ ${environment}` : "❌ Missing");
+
+    if (!accessToken) {
+      console.warn("⚠️ WARNING: No access token found! Request will fail on backend.");
+    }
 
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
