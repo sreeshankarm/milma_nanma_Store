@@ -466,64 +466,29 @@ export const TopUpModal: React.FC<Props> = ({
   onClose,
   balance,
 }) => {
-  // const [html, setHtml] = useState("");
+  const [html, setHtml] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const loadedRef = useRef(false);
 
+  const loadPayment = async () => {
+    try {
+      setLoading(true);
+      setError("");
 
+      const data = await getPaymentFormHtml(balance);
 
+      if (!data) throw new Error("Empty response");
 
-  // const loadPayment = async () => {
-  //   try {
-  //     setLoading(true);
-  //     setError("");
-
-  //     const data = await getPaymentFormHtml(balance);
-
-  //     if (!data) throw new Error("Empty response");
-
-  //     setHtml(data);
-  //   } catch (err) {
-  //     console.error("Payment form error:", err);
-  //     setError("Unable to load payment form.");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-
-  const openInNewTab = (htmlString: string) => {
-  const blob = new Blob([htmlString], { type: "text/html" });
-  const url = URL.createObjectURL(blob);
-
-  window.open(url, "_blank");
-};
-
-
-const loadPayment = async () => {
-  try {
-    setLoading(true);
-    setError("");
-
-    const data = await getPaymentFormHtml(balance);
-
-    if (!data) throw new Error("Empty response");
-
-    // 🔥 Open in new tab instead of iframe
-    openInNewTab(data);
-
-    // Optional: close modal after opening
-    onClose();
-
-  } catch (err) {
-    console.error("Payment form error:", err);
-    setError("Unable to load payment form.");
-  } finally {
-    setLoading(false);
-  }
-};
+      setHtml(data);
+    } catch (err) {
+      console.error("Payment form error:", err);
+      setError("Unable to load payment form.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (open && !loadedRef.current) {
@@ -534,7 +499,7 @@ const loadPayment = async () => {
 
   const handleClose = () => {
     loadedRef.current = false;
-    // setHtml("");
+    setHtml("");
     onClose();
   };
 
@@ -573,7 +538,7 @@ const loadPayment = async () => {
             </div>
           )}
 
-          {/* {!loading && !error && html && (
+          {!loading && !error && html && (
             <iframe
               key="payment-frame"
               title="Payment Form"
@@ -581,7 +546,7 @@ const loadPayment = async () => {
               className="w-full h-full border-0"
               sandbox="allow-scripts allow-forms allow-same-origin allow-popups"
             />
-          )} */}
+          )}
         </div>
       </div>
     </div>
