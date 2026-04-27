@@ -1,5 +1,6 @@
 import api from "./axios";
-import type { TransactionPayload, Transaction } from "../types";
+import type { TransactionPayload, Transaction ,LedgerItem, LedgerPayload} from "../types";
+
 
 
 interface TransactionResponse {
@@ -26,29 +27,42 @@ export const transactionHistoryApi = (payload: TransactionPayload) =>
 // };
 
 
-// export const getPaymentFormHtml = async (balance?: number) => {
-//   const response = await api.get("/paymentform", {
-//     params: balance !== undefined ? { balance } : {},
-//     responseType: "text", // IMPORTANT: because backend returns HTML
-//   });
-
-//   return response.data;
-// };
-
-
-
-
-
-
-
-export const getPaymentFormHtml = async (balance: number) => {
+export const getPaymentFormHtml = async (balance?: number) => {
   const response = await api.get("/paymentform", {
-    params: { balance },
-    headers: {
-      Accept: "text/html",
-    },
-    responseType: "text", // 👈 VERY IMPORTANT
+    params: balance !== undefined ? { balance } : {},
+    responseType: "text", // IMPORTANT: because backend returns HTML
   });
 
-  return response.data; // this will be raw HTML string
+  return response.data;
+};
+
+
+
+
+
+/* ---------- LEDGER BALANCE ---------- */
+// export const getLedgerBalanceApi = async (payload: LedgerPayload) => {
+//   const form = new FormData();
+
+//   form.append("p_sdate", payload.p_sdate);
+//   form.append("p_edate", payload.p_edate);
+
+//   const { data } = await api.post<LedgerItem[]>("/myledger", form, {
+//     headers: {
+//       "Content-Type": "multipart/form-data",
+//     },
+//   });
+
+//   return data;
+// };
+
+export const getLedgerBalanceApi = async (payload: LedgerPayload) => {
+  const form = new FormData();
+
+  form.append("p_sdate", payload.p_sdate);
+  form.append("p_edate", payload.p_edate);
+
+  const { data } = await api.post<LedgerItem[]>("/myledger", form);
+
+  return data;
 };

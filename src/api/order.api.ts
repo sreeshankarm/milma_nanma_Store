@@ -4,6 +4,7 @@ import type {
   OrderDetailsResponse,
   ApiSuccess,
   DateRangePayload,
+  CancelOrderResponse,
 } from "../types";
 
 /* ---------- MY ORDERS ---------- */
@@ -37,13 +38,13 @@ export const updateOrderDetailApi = (payload: {
 export const cancelOrderDetailApi = (payload: {
   indentdetailgid: number;
 }) =>
-  api.post<ApiSuccess>("/cancelorderdetail", payload);
+  api.post<CancelOrderResponse>("/cancelorderdetail", payload);
 
 /* ---------- CANCEL ENTIRE ORDER ---------- */
 export const cancelOrderApi = (payload: {
-  indentdetailgid: number;
+  indentgid: number;
 }) =>
-  api.post<ApiSuccess>("/cancelorder", payload);
+  api.post<CancelOrderResponse>("/cancelorder", payload);
 
 /* ---------- UPDATE ORDER REMARKS ---------- */
 export const updateOrderRemarksApi = (payload: {

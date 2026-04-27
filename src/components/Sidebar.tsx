@@ -4,19 +4,20 @@ import {
   Wallet,
   ShoppingBag,
   ShoppingCart,
-  PackageSearch,
-  BarChart3,
+  // PackageSearch,
+  // BarChart3,
   RotateCw,
-  Gift,
-  MessageCircle,
-  Users,
+  // Gift,
+  // MessageCircle,
+  // Users,
   X,
+  Banknote,
+  Repeat,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/auth/useAuth";
 import { useProfile } from "../context/profile/useProfile";
-import  { useEffect } from "react";
-
+import { useEffect } from "react";
 
 interface Props {
   open: boolean;
@@ -25,49 +26,67 @@ interface Props {
 
 export default function Sidebar({ open, onClose }: Props) {
   const location = useLocation();
-    const { userName } = useAuth();
-    const { profile,fetchProfile } = useProfile();
+  const { userName } = useAuth();
+  const { profile, fetchProfile } = useProfile();
 
-      useEffect(() => {
-        fetchProfile();
-      }, []);
+  useEffect(() => {
+    fetchProfile();
+  }, []);
 
   const menu = [
     { icon: <Home size={18} />, label: "Home", path: "/" },
-    { icon: <User size={18} />, label: "My Profile", path: "/profile" },
-    { icon: <Wallet size={18} />, label: "My Wallet", path: "/wallet" },
+    { icon: <Wallet size={18} />, label: "Balance Cash", path: "/wallet" },
+    { icon: <ShoppingCart size={18} />, label: "My Cart", path: "/cart" },
     { icon: <ShoppingBag size={18} />, label: "My Orders", path: "/orders" },
-    { icon: <ShoppingCart size={18} />, label: "Cart", path: "/cart" },
-    {
-      icon: <PackageSearch size={18} />,
-      label: "Order Tracking",
-      path: "/orderTracking",
-    },
-    {
-      icon: <BarChart3 size={18} />,
-      label: "Sales Trend",
-      path: "/salesTrend",
-    },
     {
       icon: <RotateCw size={18} />,
       label: "Damages & Return",
       path: "/damagesReturn",
     },
+  
+
     {
-      icon: <Gift size={18} />,
-      label: "Commission Rewards",
-      path: "/CommissionRewards",
+      icon: <Banknote size={18} />,
+      label: "Cash Transactions",
+      path: "/cashtransactions",
     },
+
     {
-      icon: <MessageCircle size={18} />,
-      label: "Feedback & Complaints",
-      path: "/feedbackComplaints",
+      icon: <Repeat size={18} />,
+      label: "Transactions",
+      path: "/transactions",
     },
-    {
-      icon: <Users size={18} />,
-      label: "My distributors",
-      path: "/mydistributors",
-    },
+
+    { icon: <User size={18} />, label: "Profile", path: "/profile" },
+
+    // {
+    //   icon: <MessageCircle size={18} />,
+    //   label: "Feedback & Complaints",
+    //   path: "/feedbackComplaints",
+    // },
+
+    // {
+    //   icon: <PackageSearch size={18} />,
+    //   label: "Order Tracking",
+    //   path: "/orderTracking",
+    // },
+    // {
+    //   icon: <BarChart3 size={18} />,
+    //   label: "Sales Trend",
+    //   path: "/salesTrend",
+    // },
+
+    // {
+    //   icon: <Gift size={18} />,
+    //   label: "Commission Rewards",
+    //   path: "/CommissionRewards",
+    // },
+
+    // {
+    //   icon: <Users size={18} />,
+    //   label: "My distributors",
+    //   path: "/mydistributors",
+    // },
   ];
 
   return (
@@ -97,14 +116,16 @@ export default function Sidebar({ open, onClose }: Props) {
             />
             <p className="text-xl font-bold mt-2">Namma Store</p>
             <p className="text-sm text-gray-600">Agent • {userName}</p>
-            <p className="text-sm text-gray-600 mt-1">{profile?.login_mobile}</p>
-            <p className="text-xs text-gray-500">{profile?.state_name}</p>
+            <p className="text-sm text-gray-600 mt-1">
+              {profile?.login_mobile}
+            </p>
+            <p className="text-xs text-gray-500">{profile?.name},{profile?.state_name} </p>
           </div>
 
           {/* Close Button */}
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-gray-200 transition"
+            className="p-2 rounded-lg hover:bg-gray-200 transition cursor-pointer"
           >
             <X size={22} className="text-gray-700" />
           </button>
@@ -143,7 +164,7 @@ export default function Sidebar({ open, onClose }: Props) {
 
         {/* Footer */}
         <div className="p-4 text-center text-xs text-gray-500 border-t">
-          Need help? Contact support@milma.coop
+          Powered by : Computer Centre, MILMA, KCMMF
         </div>
       </aside>
     </>

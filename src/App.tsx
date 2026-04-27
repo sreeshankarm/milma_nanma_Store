@@ -1,4 +1,4 @@
-import { StoreProvider } from "./context/store/store";
+// import { StoreProvider } from "./context/store/store";
 import "./App.css";
 import AppRouter from "./Router/AppRouter";
 // import { BrowserRouter } from "react-router-dom";
@@ -6,15 +6,14 @@ import AppRouter from "./Router/AppRouter";
 
 import { AppProviders } from "./app/providers/AppProviders";
 
-
 export default function App() {
   return (
     // <BrowserRouter>
     // <AuthProvider>
     <AppProviders>
-      <StoreProvider>
-        <AppRouter />
-      </StoreProvider>
+      {/* <StoreProvider> */}
+      <AppRouter />
+      {/* </StoreProvider> */}
     </AppProviders>
     // </AuthProvider>
 

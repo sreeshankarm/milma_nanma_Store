@@ -3,12 +3,14 @@ import { Wallet, ChevronRight } from "lucide-react";
 interface Props {
   balance: number;
   onTopUp: () => void;
+  allowTopUp: boolean;
 }
 
-export default function WalletCard({ balance, onTopUp }: Props) {
+export default function WalletCard({ balance, onTopUp, allowTopUp }: Props) {
   return (
     <div
-      onClick={onTopUp}
+      // onClick={onTopUp}
+      onClick={allowTopUp ? onTopUp : undefined}
       className="bg-linear-to-r from-[#1A3171] to-[#1A3171] p-6 rounded-3xl shadow-xl relative overflow-hidden cursor-pointer group"
     >
       {/* Background Circle */}
@@ -20,9 +22,9 @@ export default function WalletCard({ balance, onTopUp }: Props) {
           <div className="p-2 bg-white/10 rounded-lg backdrop-blur-md">
             <Wallet className="text-white" size={24} />
           </div>
-          <span className="text-xs bg-green-500/20 text-green-300 px-2 py-1 rounded">
+          {/* <span className="text-xs bg-green-500/20 text-green-300 px-2 py-1 rounded">
             +4.2%
-          </span>
+          </span> */}
         </div>
 
         {/* Balance Label */}
@@ -34,13 +36,15 @@ export default function WalletCard({ balance, onTopUp }: Props) {
             balance < 0 ? "text-red-300" : "text-white"
           }`}
         >
-          ₹{balance.toLocaleString()}
+          ₹{Number(balance).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
         </h2>
 
         {/* Tap to Top Up */}
-        <div className="flex items-center gap-2 text-xs text-blue-300 transition-transform group-hover:translate-x-2">
-          Tap to Top Up <ChevronRight size={12} />
-        </div>
+        {allowTopUp && (
+          <div className="flex items-center gap-2 text-xs text-blue-300 transition-transform group-hover:translate-x-2">
+            Tap to Top Up <ChevronRight size={12} />
+          </div>
+        )}
       </div>
     </div>
   );

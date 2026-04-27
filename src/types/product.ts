@@ -4,7 +4,10 @@ export interface Product {
   prod_code: number;
   final_rate: string;
   imagepath?: string;
-  subgrp_name:string;
+  subgrp_name: string;
+  mrp: string;
+  prod_gid: number;
+  subgrp_gid: number;
 }
 
 /* ---------- PRODUCT SUB GROUP ---------- */
@@ -25,9 +28,9 @@ export interface ProductDetail {
   prod_name: string;
   prod_code: number;
   final_rate: string;
+  mrp: string;
   uom_name: string;
   imagepath?: string; // ✅ ADD THIS
-
 }
 
 export interface ProductDetailsResponse {
@@ -35,10 +38,11 @@ export interface ProductDetailsResponse {
   allowedshifts: number[];
 }
 
-
 export interface ModalProduct {
   prod_code: number;
   prod_name: string;
   final_rate: number;
   imagepath?: string;
+  mrp?: string;
+  prod_gid?: number;
 }

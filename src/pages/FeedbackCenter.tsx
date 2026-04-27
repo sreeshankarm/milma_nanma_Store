@@ -1,198 +1,225 @@
-import { useMemo, useState } from "react";
+import { useState, useRef } from "react";
 import {
   AlertCircle,
-  Clock3,
   MessageSquare,
   Send,
-  CheckCircle2,
+  Paperclip,
+  Mic,
+  Square,
 } from "lucide-react";
-import { useStore } from "../context/store/store";
-import { ComplaintCategory } from "../typesss/typesss";
-// import type { ComplaintStatus } from "../typesss/typesss";
+import { toast } from "react-toastify";
+import { useFeedback } from "../context/feedback/useFeedback";
 
-/* ----------------------------------------
-   STATUS BADGE STYLES
----------------------------------------- */
-// const statusCls: Record<ComplaintStatus, string> = {
-//   Open: "bg-amber-500/15 text-amber-500 border border-amber-500/30",
-//   "In Progress": "bg-blue-500/10 text-blue-500 border border-blue-500/30",
-//   Responded: "bg-emerald-500/10 text-emerald-600 border border-emerald-500/30",
-//   Closed: "bg-slate-500/15 text-slate-600 border border-slate-500/30",
-// };
-
-/* ----------------------------------------
-   DATE FORMATTER
----------------------------------------- */
-const formatDate = (date: Date) =>
-  new Date(date).toLocaleString("en-IN", {
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-
-/* ----------------------------------------
-   COMPONENT
----------------------------------------- */
 export default function FeedbackCenter() {
-  const { complaints, submitComplaint } = useStore();
+  const { submitFeedback, loading, feedbackList, getFeedbackById } =
+    useFeedback();
+  const [text, setText] = useState("");
+  const [file, setFile] = useState<File | null>(null);
 
-  const [category, setCategory] = useState<ComplaintCategory>(
-    ComplaintCategory.QUALITY
-  );
-  const [description, setDescription] = useState("");
-  const [contact, setContact] = useState("");
-  const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [recording, setRecording] = useState(false);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunks = useRef<Blob[]>([]);
 
-  /* ---------- SORTED LIST ---------- */
-  const list = useMemo(() => {
-    if (!Array.isArray(complaints)) return [];
-    return [...complaints].sort((a, b) => +b.updatedAt - +a.updatedAt);
-  }, [complaints]);
 
-  /* ---------- SUBMIT ---------- */
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!description.trim() || !contact.trim()) return;
 
-    setLoading(true);
-    const res = await submitComplaint(
-      category,
-      description.trim(),
-      contact.trim()
-    );
-    setMessage(res);
-    setDescription("");
-    setLoading(false);
+  /* ---------- RECORD ---------- */
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+      });
+
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunks.current = [];
+
+      mediaRecorder.ondataavailable = (e) => {
+        audioChunks.current.push(e.data);
+      };
+
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(audioChunks.current, {
+          type: "audio/webm",
+        });
+
+        const audioFile = new File([blob], "voice.webm", {
+          type: "audio/webm",
+        });
+
+        setFile(audioFile);
+        toast.success("Voice recorded successfully");
+      };
+
+      mediaRecorder.start();
+      setRecording(true);
+    } catch {
+      toast.error("Microphone permission denied");
+    }
   };
 
+  const stopRecording = () => {
+    mediaRecorderRef.current?.stop();
+    setRecording(false);
+  };
+
+  /* ---------- SUBMIT ---------- */
+
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  // ✅ VALIDATION
+  if (!text.trim()) {
+    toast.error("Please enter feedback");
+    return;
+  }
+
+  try {
+    // ✅ SUBMIT
+    const id = await submitFeedback({
+      feedback_text: text,
+      file,
+    });
+
+    if (!id) return;
+
+    // ✅ FETCH FROM BACKEND
+    await getFeedbackById(id);
+
+    // ✅ RESET FORM
+    setText("");
+    setFile(null);
+  } catch (err) {
+    console.error("Submit error:", err);
+    toast.error("Something went wrong");
+  }
+};
+
+  const isDisabled = !text.trim() || loading;
+
   return (
-    <div className="max-w-xl mx-auto p-6 pb-24 space-y-6 ">
-      {/* ---------- HEADER ---------- */}
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-xs uppercase tracking-widest text-blue-300/70">
-            Support & Feedback
-          </p>
-          <h1 className="text-2xl font-bold">Complaints / Suggestions</h1>
-        </div>
-        <div className="p-3 rounded-xl bg-red-500/10 text-red-500">
-          <AlertCircle size={22} />
-        </div>
-      </div>
-
-      {/* ---------- SUBMIT FORM ---------- */}
-      <div className="bg-white border border-gray-300 rounded-2xl p-5 shadow-sm space-y-4">
-        <div className="flex items-start gap-3">
-          <div className="p-2 rounded-xl bg-blue-500/10 text-blue-500">
-            <MessageSquare size={18} />
-          </div>
+    <div className="min-h-screen  from-gray-50 to-gray-100 p-4 sm:p-6">
+      <div className="max-w-4xl mx-auto space-y-6">
+        {/* HEADER */}
+        <div className="flex items-center justify-between">
           <div>
-            <h3 className="font-semibold text-lg">Submit via App</h3>
-            <p className="text-sm text-gray-500">
-              Raise quality, logistics, product or marketing feedback directly
-              from here.
+            <p className="text-xs uppercase tracking-widest text-blue-400">
+              Support & Feedback
             </p>
+            <h1 className="text-2xl font-bold text-gray-800">
+              Complaints / Suggestions
+            </h1>
+          </div>
+
+          <div className="p-3 rounded-xl bg-red-100 text-red-500">
+            <AlertCircle size={22} />
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-xs text-gray-500 block mb-1">
-                Category
-              </label>
-              <select
-                value={category}
-                onChange={(e) =>
-                  setCategory(e.target.value as ComplaintCategory)
-                }
-                className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500/40 outline-none"
-              >
-                {Object.values(ComplaintCategory).map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
+        {/* MAIN CARD */}
+        <div className="bg-white rounded-2xl  border border-gray-200 p-6 space-y-6">
+          {/* TITLE */}
+          <div className="flex items-start gap-3">
+            <div className="p-3 rounded-xl bg-blue-100 text-blue-600">
+              <MessageSquare size={20} />
             </div>
 
             <div>
+              <h3 className="text-lg font-semibold text-gray-800">
+                Submit Feedback
+              </h3>
+              <p className="text-sm text-gray-500">
+                Share your issue or suggestion. We’ll get back to you.
+              </p>
+            </div>
+          </div>
+
+          {/* FORM */}
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* TEXTAREA */}
+            <div>
               <label className="text-xs text-gray-500 block mb-1">
-                Mobile / Email
+                Your Feedback
               </label>
-              <input
-                value={contact}
-                onChange={(e) => setContact(e.target.value)}
-                placeholder="For updates"
+
+              <textarea
+                rows={4}
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                placeholder="Describe your issue or suggestion..."
                 className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500/40 outline-none"
               />
             </div>
-          </div>
 
-          <div>
-            <label className="text-xs text-gray-500 block mb-1">
-              Complaint / Feedback
-            </label>
-            <textarea
-              rows={3}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Describe the issue"
-              className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500/40 outline-none"
-            />
-          </div>
+            {/* FILE + VOICE */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              {/* FILE */}
+              <label className="flex-1 flex items-center gap-2 border border-dashed border-gray-300 rounded-xl px-4 py-3 cursor-pointer hover:bg-gray-50 transition">
+                <Paperclip size={16} />
+                <span className="text-sm text-gray-600 truncate">
+                  {file ? file.name : "Upload file"}
+                </span>
+                <input
+                  type="file"
+                  className="hidden"
+                  onChange={(e) => setFile(e.target.files?.[0] || null)}
+                />
+              </label>
 
-          {message && <p className="text-sm text-emerald-600">{message}</p>}
-
-          <button
-            disabled={loading}
-            className="w-full bg-[#8e2d26] hover:bg-[#b91c1c] transition text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
-          >
-            <Send size={16} />
-            {loading ? "Sending..." : "Submit Feedback"}
-          </button>
-        </form>
-      </div>
-
-      {/* ---------- LIST ---------- */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-2 text-sm text-gray-500">
-          <Clock3 size={16} />
-          Live status & replies
-        </div>
-
-        {list.map((c) => (
-          <div key={c.id} className="bg-white border rounded-2xl p-4">
-            <div className="flex items-start justify-between gap-3">
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-semibold text-gray-400">
-                    {c.id}
-                  </span>
-                  <span className={`text-[11px] px-2 py-1 rounded-full `}>
-                    {c.status}
-                  </span>
-                </div>
-
-                <p className="font-semibold">{c.category}</p>
-                <p className="text-sm text-gray-600">{c.description}</p>
-                <p className="text-xs text-gray-400">
-                  Channel: {c.channel} • Updated {formatDate(c.updatedAt)}
-                </p>
-              </div>
-
-              <CheckCircle2 size={20} className="text-emerald-500" />
+              {/* VOICE */}
+              <button
+                type="button"
+                onClick={recording ? stopRecording : startRecording}
+                className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-gray-300 transition ${
+                  recording
+                    ? "bg-red-100 text-red-600 border-red-200"
+                    : "bg-gray-100 hover:bg-gray-200"
+                }`}
+              >
+                {recording ? <Square size={16} /> : <Mic size={16} />}
+                <span className="text-sm font-medium">
+                  {recording ? "Stop Recording" : "Voice Record"}
+                </span>
+              </button>
             </div>
 
-            {c.response && (
-              <div className="mt-3 border-t pt-3 text-sm text-emerald-700">
-                <b>Reply:</b> {c.response}
-              </div>
-            )}
-          </div>
-        ))}
+            {/* SUBMIT */}
+            <button
+              disabled={isDisabled}
+              className="w-full bg-black hover:bg-gray-800 text-white py-3 rounded-xl flex items-center justify-center gap-2 font-medium transition disabled:opacity-40 cursor-pointer"
+            >
+              <Send size={16} />
+              {loading ? "Submitting..." : "Submit Feedback"}
+            </button>
+          </form>
+        </div>
+
+        {/* SUBMITTED LIST */}
+        <div className="space-y-3">
+          <h2 className="text-lg font-semibold text-gray-800">
+            Submitted Feedback
+          </h2>
+
+ 
+
+          {feedbackList.length === 0 && (
+            <p className="text-sm text-gray-400">No feedback submitted yet</p>
+          )}
+
+          {feedbackList.map((item) => (
+            <div
+              key={item.id}
+              className="bg-white border border-gray-100 rounded-xl p-4"
+            >
+              <p className="text-gray-800 text-sm">{item.feedback_text}</p>
+
+              {item.file_url && (
+                <audio controls className="mt-2 w-full">
+                  <source src={item.file_url} />
+                </audio>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

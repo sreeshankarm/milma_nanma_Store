@@ -20,6 +20,7 @@ export interface BillItem {
 
 export interface InvoiceDetail {
   type: string;
+  inv_gid: number;
   gid: number;
   prod_code: string | number;
   prod_name: string;
@@ -30,4 +31,34 @@ export interface InvoiceDetail {
   basic_rate: string;
   gst_per: number;
   veh_no: string;
+  inv_shift: number;
+}
+
+export interface OrderInvoiceStatus {
+  inv_gid: number;
+  inv_no: number;
+  inv_date: string;
+  prod_code: number;
+  prod_name: string;
+  qty: string;
+  inv_shift: number;
+}
+
+export interface OrderInvoiceStatusResponse {
+  status: string;
+  data?: OrderInvoiceStatus[];
+  msg?: string;
+}
+
+export interface LastAvailableLocation {
+  supplyshift: string;
+  supplydate: string;
+  current_latitude: string;
+  current_longitude: string;
+  trip_status: "RUNNING" | "COMPLETED" | "NOT_STARTED";
+}
+
+export interface InvoiceDetailsResponse {
+  invoicedetails: InvoiceDetail[];
+  lastavailablelocation?: LastAvailableLocation;
 }

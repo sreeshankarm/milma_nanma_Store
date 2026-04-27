@@ -8,3 +8,6 @@ export * from "./common";
 export * from "./ack";
 export * from "./invoice";
 export * from "./payment";
+export * from "./feedback";
+
+

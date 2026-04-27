@@ -5,6 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "../context/auth/useAuth";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
+import { Loader2, LogIn } from "lucide-react";
 
 interface SigninForm {
   mobile: string;
@@ -75,7 +76,9 @@ const Signin = () => {
           />
         </div>
 
-        <h2 className="text-center text-xl font-semibold mb-6 text-[#8e2d25]">Sign-In</h2>
+        <h2 className="text-center text-xl font-semibold mb-6 text-[#8e2d25]">
+          Login
+        </h2>
 
         {/* FORM */}
         <form autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
@@ -126,39 +129,6 @@ const Signin = () => {
               </p>
             )}
           </div>
-
-          {/* PASSWORD */}
-          {/* <div className="mb-6">
-            <label className="text-sm font-medium text-gray-700">
-              Password
-            </label>
-
-            <input
-              type="password"
-              autoComplete="new-password"
-              placeholder="Enter password"
-              {...register("password", {
-                required: "Password is required",
-                minLength: {
-                  value: 6,
-                  message: "Password must be at least 6 characters",
-                },
-              })}
-              className={`mt-1 w-full rounded-lg border px-3 py-2 text-sm
-                focus:outline-none focus:ring-2
-                ${
-                  errors.password
-                    ? "border-red-400 focus:ring-red-200"
-                    : "border-gray-300 focus:ring-sky-200"
-                }`}
-            />
-
-            {errors.password && (
-              <p className="mt-1 text-xs text-red-500">
-                {errors.password.message}
-              </p>
-            )}
-          </div> */}
 
           {/* PASSWORD */}
           <div className="mb-6">
@@ -231,10 +201,21 @@ const Signin = () => {
            }
            `}
           >
-            {isSubmitting && (
+            {/* {isSubmitting && (
               <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
             )}
-            {isSubmitting ? "Signing In..." : "Sign In"}
+            {isSubmitting ? "Signing In..." : "Sign In"} */}
+            {isSubmitting ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Logging in...
+              </>
+            ) : (
+              <>
+                <LogIn className="h-4 w-4" />
+                Login
+              </>
+            )}
           </button>
         </form>
       </div>

@@ -14,7 +14,7 @@ const SupplyDateCard: React.FC<SupplyDateCardProps> = ({
   onChange,
 }) => {
   return (
-    <div className="bg-blue-600/10 border border-blue-600/20 dark:border-blue-400/20 rounded-2xl px-6 py-5  w-full">
+    <div className="bg-blue-600/10 border border-blue-600/20  rounded-2xl px-6 py-5  w-full">
       <div className="flex items-center justify-between gap-6">
         {/* Left: Label */}
         <div className="flex flex-col">
@@ -47,6 +47,7 @@ const SupplyDateCard: React.FC<SupplyDateCardProps> = ({
             focus:ring-2
             focus:ring-white/80
             transition
+            cursor-pointer
           "
         />
       </div>

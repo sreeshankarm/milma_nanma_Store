@@ -11,6 +11,7 @@ import { logoutApi } from "../../api/auth.api";
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuth, setIsAuth] = useState<boolean>(!!token.getAccess());
   const [userName, setUserName] = useState<string | null>(null);
+  const [appAccess, setAppAccess] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   /* ---------- LOAD USER ON REFRESH ---------- */
@@ -32,6 +33,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         // }
 
         setUserName(res.data.user.user_name);
+        setAppAccess(res.data.appaccess);
         setIsAuth(true);
       } catch (err: any) {
         toast.error(err?.message || "Invalid credentials", {
@@ -49,19 +51,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   /* ---------- LOGIN ---------- */
-  // const login = async (mobile: string, password: string) => {
-  //   const payload: LoginPayload = {
-  //     login_mobile: mobile,
-  //     password,
-  //   };
-
-  //   const { data } = await loginApi(payload);
-  //   token.set(data);
-
-  //   const userRes = await getUserApi();
-  //   setUserName(userRes.data.user.user_name);
-  //   setIsAuth(true);
-  // };
 
   const login = async (mobile: string, password: string) => {
     try {
@@ -75,6 +64,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       const userRes = await getUserApi();
       setUserName(userRes.data.user.user_name);
+      setAppAccess(userRes.data.appaccess);
       setIsAuth(true);
 
       toast.success("Login successful");
@@ -87,22 +77,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   /* ---------- LOGOUT ---------- */
-  // const logout = () => {
-  //   token.clear();
-  //   setIsAuth(false);
-  //   setUserName(null);
-  // };
 
-    const logout = async () => {
+  const logout = async () => {
     try {
       await logoutApi(); // ✅ backend token invalidation
     } catch (err) {
       // even if API fails, force logout
-      console.warn("Logout API failed, clearing session");
+      // console.warn("Logout API failed, clearing session");
+      toast.error("Logout request failed. Session cleared locally.");
     } finally {
-      token.clear();      // ✅ clear access token
-      setIsAuth(false);   // ✅ update auth state
+      token.clear(); // ✅ clear access token
+      setIsAuth(false); // ✅ update auth state
       setUserName(null);
+      setAppAccess(null);
     }
   };
 
@@ -128,7 +115,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   if (loading) return <Loader />;
 
   return (
-    <AuthContext.Provider value={{ isAuth, userName, login, logout }}>
+    <AuthContext.Provider
+      value={{ isAuth, userName, appAccess, login, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );

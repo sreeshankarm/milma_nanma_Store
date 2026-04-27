@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-// import { useStore } from "../context/store/store";
 import WalletCard from "../components/WalletCard";
 import QuickActions from "../components/QuickActions";
 import FeedbackBanner from "../components/FeedbackBanner";
@@ -7,34 +6,30 @@ import SearchBar from "../components/SearchBar";
 import ProductCard from "../components/ProductCard"; // ✅ default import
 import SupplyDateCard from "../components/SupplyDateCard";
 
-// import type { Productt } from "../typesss/typesss";
 import ProductModal from "../components/ProductModal";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-// import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { TopUpModal } from "../components/TopUpModal";
 import { useProduct } from "../context/product/useProduct";
 import type { Product } from "../types/product";
 import { useCart } from "../context/cart/useCart";
-import { useProfile } from "../context/profile/useProfile";
 import { getSettingsApi } from "../api/settings.api";
+import { usePayment } from "../context/Payment/usePayment";
+import { useAuth } from "../context/auth/useAuth";
+import ProductSubGroupFilter from "../components/ProductSubGroupFilter";
 
 export const HomeView: React.FC = () => {
-  const { profile } = useProfile();
-  const balance = Number(profile?.credit_limit ?? 0);
-  // const {
-  //   balance,
-  //   //  getProducts
-  // } = useStore();
-  const { products, loading, fetchProducts } = useProduct();
+  const { products, loading, fetchProducts, productSubGroups } = useProduct();
+  const { balance, fetchBalance } = usePayment();
   const { addToCart } = useCart();
+  const { appAccess } = useAuth();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selected, setSelected] = useState<Product | null>(null);
   const [showTopUp, setShowTopUp] = useState(false);
-  // ✅ Supply Date State
-  // const [supplyDate, setSupplyDate] = useState("2026-01-07");
+  const [activeGroup, setActiveGroup] = useState<number | null>(null);
+
   const getToday = () => {
     const today = new Date();
     return today.toISOString().split("T")[0]; // YYYY-MM-DD
@@ -42,14 +37,22 @@ export const HomeView: React.FC = () => {
 
   const [supplyDate, setSupplyDate] = useState(getToday());
 
-  const filtered = products.filter((p) =>
-    p.prod_name.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
-  const navigate = useNavigate();
+  const normalize = (text: string) => text.toLowerCase().replace(/\s+/g, "");
 
-  // useEffect(() => {
-  //   fetchProducts("2025-12-04");
-  // }, []);
+  const filtered = products.filter((p) => {
+    const searchMatch = normalize(p.prod_name).includes(normalize(searchTerm));
+
+    const groupMatch = activeGroup === null || p.subgrp_gid === activeGroup;
+
+    return searchMatch && groupMatch;
+  });
+
+  const navigate = useNavigate();
+  useEffect(() => {
+    const today = new Date().toISOString().split("T")[0];
+
+    fetchBalance(today, today);
+  }, []);
 
   useEffect(() => {
     fetchProducts(supplyDate);
@@ -57,35 +60,6 @@ export const HomeView: React.FC = () => {
 
   const [minDate, setMinDate] = useState("");
   const [maxDate, setMaxDate] = useState("");
-
-  // useEffect(() => {
-  //   const loadSettings = async () => {
-  //     try {
-  //       const data = await getSettingsApi();
-
-  //       const allowedDays = data?.maxallowedsupplydate ?? 7;
-
-  //       const today = new Date();
-
-  //       // MIN = Today
-  //       const min = new Date(today);
-
-  //       // MAX = Today + (allowedDays - 1)
-  //       const max = new Date(today);
-  //       max.setDate(today.getDate() + (allowedDays - 1));
-
-  //       setMinDate(min.toISOString().split("T")[0]);
-  //       setMaxDate(max.toISOString().split("T")[0]);
-
-  //       // Default selected date = today
-  //       setSupplyDate(min.toISOString().split("T")[0]);
-  //     } catch (error) {
-  //       console.error("Settings API failed:", error);
-  //     }
-  //   };
-
-  //   loadSettings();
-  // }, []);
 
   useEffect(() => {
     const format = (date: Date) => date.toLocaleDateString("en-CA"); // YYYY-MM-DD (safe)
@@ -114,12 +88,16 @@ export const HomeView: React.FC = () => {
     <div className="p-4 pb-28 space-y-8 animate-fade-in">
       {/* Wallet / Balance Card */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <WalletCard balance={balance} onTopUp={() => setShowTopUp(true)} />
+        <WalletCard
+          balance={balance}
+          onTopUp={() => setShowTopUp(true)}
+          allowTopUp={appAccess?.payment === 1}
+        />
 
         <QuickActions
           repeatLastOrder={() => navigate("/cart")}
           goToReturns={() => navigate("/damagesReturn")}
-          setActiveView={() => {}}
+          // setActiveView={() => {}}
         />
       </div>
       {/* ================= Feedback & Supply Date ================= */}
@@ -129,10 +107,7 @@ export const HomeView: React.FC = () => {
         <FeedbackBanner onClick={() => navigate("/feedbackComplaints")} />
 
         {/* Supply Date */}
-        {/* <SupplyDateCard
-          value={supplyDate}
-          onChange={(date) => setSupplyDate(date)}
-        /> */}
+
         <SupplyDateCard
           value={supplyDate}
           min={minDate}
@@ -144,29 +119,11 @@ export const HomeView: React.FC = () => {
       {/* Search Bar */}
       <SearchBar value={searchTerm} onChange={setSearchTerm} />
 
-      {/* Product Grid */}
-
-      {/* {loading ? (
-        <p className="text-center text-gray-500 text-lg font-medium">
-          Loading products...
-        </p>
-      ) : filtered.length === 0 ? (
-        <div className="w-full flex justify-center items-center py-20">
-          <p className="text-gray-500 text-lg font-medium">No items found</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-14 p-4">
-          {filtered.map((p: Product) => (
-            <ProductCard
-              key={p.prod_code}
-              product={p}
-              // onAdd={(prod) => console.log("ADD", prod)}
-              onAdd={() => {}}
-              onClick={() => setSelected(p)}
-            />
-          ))}
-        </div>
-      )} */}
+      <ProductSubGroupFilter
+        groups={productSubGroups}
+        active={activeGroup}
+        onSelect={setActiveGroup}
+      />
 
       {/* Product Grid */}
 
@@ -197,8 +154,9 @@ export const HomeView: React.FC = () => {
             <ProductCard
               key={p.prod_code}
               product={p}
-              onAdd={() => {}}
+              // onAdd={() => {}}
               onClick={() => setSelected(p)}
+              allowAdd={appAccess?.indent === 1}
             />
           ))}
         </div>
@@ -209,59 +167,6 @@ export const HomeView: React.FC = () => {
         onClose={() => setShowTopUp(false)}
         balance={balance}
       />
-
-      {/* {selected && (
-        <ProductModal
-          product={selected}
-          supplyDate="2025-12-04"
-          onClose={() => setSelected(null)}
-          onConfirm={async (qty, supplyShift) => {
-            try {
-              await addToCart(
-                "2026-01-01", // supplydate
-                supplyShift, // 1 = Morning, 2 = Evening
-                selected.prod_code,
-                qty
-              );
-
-              // toast.success(`🛒 Added to ${qty} item(s) cart`);
-
-              toast.success(
-                supplyShift === 1
-                  ? `🌅 Morning shift – ${qty} item(s) added`
-                  : `🌙 Evening shift – ${qty} item(s) added`
-              );
-              setSelected(null);
-            } catch (err) {
-              toast.error("Failed to add to cart");
-            }
-          }}
-        />
-      )} */}
-
-      {/* {selected && (
-        <ProductModal
-          product={{
-            prod_code: selected.prod_code,
-            prod_name: selected.prod_name,
-            final_rate: Number(selected.final_rate), // 🔥 FIX
-            imagepath: selected.imagepath,
-          }}
-          // supplyDate="2025-12-04"
-          supplyDate={supplyDate}
-          onClose={() => setSelected(null)}
-          onConfirm={async (qty, supplyShift,supplyDate) => {
-            await addToCart(supplyDate, supplyShift, selected.prod_code, qty);
-
-            toast.success(
-              supplyShift === 1
-                ? `🌅 Morning shift – ${qty} item(s) added`
-                : `🌙 Evening shift – ${qty} item(s) added`
-            );
-            setSelected(null);
-          }}
-        />
-      )} */}
 
       {selected && (
         <ProductModal
@@ -290,17 +195,13 @@ export const HomeView: React.FC = () => {
               }
 
               /* ✅ SUCCESS */
+
               // toast.success(
               //   supplyShift === 1
-              //     ? `🌅 Morning shift – ${qty} item(s) added`
-              //     : `🌙 Evening shift – ${qty} item(s) added`
+              //     ? `🌅 Morning shift  ${qty}  ${res.success}`
+              //     : `🌙 Evening shift  ${qty}  ${res.success}`,
               // );
-
-              toast.success(
-                supplyShift === 1
-                  ? `🌅 Morning shift  ${qty}  ${res.success}`
-                  : `🌙 Evening shift  ${qty}  ${res.success}`,
-              );
+              toast.success("Product successfully added to cart");
 
               setSelected(null);
             } catch (error) {
@@ -309,8 +210,6 @@ export const HomeView: React.FC = () => {
           }}
         />
       )}
-
-      {/* <ToastContainer position="top-right" autoClose={1200} /> */}
     </div>
   );
 };

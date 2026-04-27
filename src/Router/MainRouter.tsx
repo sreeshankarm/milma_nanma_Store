@@ -9,22 +9,23 @@ import HomeView from "../pages/HomeView";
 import CartView from "../pages/CartView";
 import MyOrdersView from "../pages/MyOrdersView";
 import ReturnRequestsView from "../pages/ReturnRequestsView";
-import DistributorDirectory from "../pages/DistributorDirectory";
+// import DistributorDirectory from "../pages/DistributorDirectory";
 import FeedbackCenter from "../pages/FeedbackCenter";
 import { MyWalletView } from "../pages/MyWalletView";
 import { MyProfileView } from "../pages/MyProfileView";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-// import { useStore } from "../context/store/store";
-// import type { CartItem } from "../typesss/typesss";
 // import { useRouteLoader } from "../Hooks/useRouteLoader";
 import type { CartItem } from "../types/cart";
 import { useCart } from "../context/cart/useCart";
+import OrderDetailsView from "../components/orders/OrderDetailsView";
+import Transactionsview from "../pages/Transactionsview";
+import Cashview from "../pages/Cashtview";
+
 
 const MainRouter = () => {
   const [open, setOpen] = useState(false);
-  // const { cart } = useStore();
   const { cart, loadCart } = useCart();
 
   useEffect(() => {
@@ -37,17 +38,13 @@ const MainRouter = () => {
     <>
       <Sidebar open={open} onClose={() => setOpen(false)} />
 
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col min-h-screen bg-gray-100">
         <Navbar
           onMenuClick={() => setOpen(true)}
           cartCount={cart.reduce(
             (sum: number, item: CartItem) => sum + item.quantity,
-            0
+            0,
           )}
-          //           cartCount={cart.reduce(
-          //   (sum, item) => sum + item.quantity,
-          //   0
-          // )}
         />
 
         <main className="p-4">
@@ -60,13 +57,20 @@ const MainRouter = () => {
               <Route path="/cart" element={<CartView />} />
               <Route path="/orders" element={<MyOrdersView />} />
               <Route path="/damagesReturn" element={<ReturnRequestsView />} />
-              <Route
+              {/* <Route
                 path="/mydistributors"
                 element={<DistributorDirectory />}
-              />
+              /> */}
               <Route path="/feedbackComplaints" element={<FeedbackCenter />} />
               <Route path="/wallet" element={<MyWalletView />} />
               <Route path="/profile" element={<MyProfileView />} />
+              <Route
+                path="/order-details/:gid"
+                element={<OrderDetailsView />}
+              />
+              <Route path="/cashtransactions" element={<Cashview/>} />
+              <Route path="/transactions" element={<Transactionsview />} />
+
               <Route path="*" element={<PageNotFound />} />
             </Routes>
           </Suspense>

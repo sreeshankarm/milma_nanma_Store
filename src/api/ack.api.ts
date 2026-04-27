@@ -4,13 +4,17 @@ import type {
   SaveAckPayload,
   AckItem,
   FaultType,
-  ApiSuccess,
+  AckSuccess,
 } from "../types";
 
 export type AckListResponse = [AckItem[], FaultType[]];
 
-export const ackListApi = (payload: AckListPayload) =>
-  api.post<AckListResponse>("/acknowledgement", payload);
+export const ackListApi = async (payload: AckListPayload) => {
+  const { data } = await api.post<AckListResponse>("/acknowledgement", payload);
+  return data;
+};
 
-export const saveAckApi = (payload: SaveAckPayload) =>
-  api.post<ApiSuccess>("/saveack", payload);
+export const saveAckApi = async (payload: SaveAckPayload) => {
+  const { data } = await api.post<AckSuccess>("/saveack", payload);
+  return data;
+};

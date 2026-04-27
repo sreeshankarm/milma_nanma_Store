@@ -1,31 +1,42 @@
-import { Mail, MapPin, Phone, Save,Edit3 } from "lucide-react";
+import {
+  Mail,
+  MapPin,
+  Phone,
+  // Save,
+  Edit3,
+} from "lucide-react";
 // import type { UserProfile, ContactDetailsFormState } from "../../typesss/typesss";
-import type { Dispatch, SetStateAction } from "react";
-import type { UserProfile, ContactDetailsFormState } from "../../types/profile";
+// import type { Dispatch, SetStateAction } from "react";
+import type {
+  UserProfile,
+  // ContactDetailsFormState
+} from "../../types/profile";
 
 interface ContactDetailsCardProps {
   profile: UserProfile | null;
-  formState: ContactDetailsFormState;
-  setFormState: Dispatch<SetStateAction<ContactDetailsFormState>>;
-  isEditing: boolean;
-  isSaving: boolean;
-  onSave?: () => void;
+  // formState: ContactDetailsFormState;
+  // setFormState: Dispatch<SetStateAction<ContactDetailsFormState>>;
+  // isEditing: boolean;
+  // isSaving: boolean;
+  // onSave?: () => void;
 }
 
 const ContactDetailsCard: React.FC<ContactDetailsCardProps> = ({
   profile,
-  formState,
-  setFormState,
-  isEditing,
-  isSaving,
-  onSave,
+  // formState,
+  // setFormState,
+  // isEditing,
+  // isSaving,
+  // onSave,
 }) => (
   <div className="bg-white rounded-2xl border border-gray-300 p-4 space-y-4">
-    <h3 className="font-semibold flex items-center gap-2"><Edit3 size={16} />  Contact details</h3>
+    <h3 className="font-semibold flex items-center gap-2">
+      <Edit3 size={16} /> Contact details
+    </h3>
+    <div className="border-t border-gray-300 pt-3 space-y-2"></div>
 
-    {isEditing ? (
+    {/* {isEditing ? (
       <>
-        {/* Phone */}
         <div className="relative">
           <Phone
             size={16}
@@ -42,7 +53,6 @@ const ContactDetailsCard: React.FC<ContactDetailsCardProps> = ({
           />
         </div>
 
-        {/* Email */}
         <div className="relative">
           <Mail
             size={16}
@@ -59,7 +69,6 @@ const ContactDetailsCard: React.FC<ContactDetailsCardProps> = ({
           />
         </div>
 
-        {/* Address */}
         <div className="relative">
           <MapPin
             size={16}
@@ -72,12 +81,11 @@ const ContactDetailsCard: React.FC<ContactDetailsCardProps> = ({
             }
             className="w-full border border-gray-300 rounded-xl pl-10 pr-3 py-2 text-sm
                        focus:outline-none focus:ring-2 focus:ring-sky-200"
-            rows={3}
+            rows={2}
             placeholder="Address"
           />
         </div>
 
-        {/* Save Button */}
         <button
           type="button"
           onClick={onSave}
@@ -90,20 +98,20 @@ const ContactDetailsCard: React.FC<ContactDetailsCardProps> = ({
           <span>{isSaving ? "Saving..." : "Save contact info"}</span>
         </button>
       </>
-    ) : (
-      <div className="space-y-3 text-sm">
-        <p className="flex items-center gap-2">
-          <Phone size={14} /> {profile?.login_mobile}
-
-        </p>
-        <p className="flex items-center gap-2">
-          <Mail size={14} /> {profile?.lgin_email ?? "-"}
-        </p>
-        <p className="flex items-center gap-2">
-          <MapPin size={14} /> {profile?.state_name}
-        </p>
-      </div>
-    )}
+    ) : ( */}
+    <div className="space-y-3 text-sm">
+      <p className="flex items-center gap-2">
+        <Phone size={14} /> {profile?.login_mobile}
+      </p>
+      <p className="flex items-center gap-2">
+        <Mail size={14} /> {profile?.lgin_email ?? "-"}
+      </p>
+      <p className="flex items-center gap-2">
+        <MapPin size={14} />
+        {profile?.name}, {profile?.state_name}
+      </p>
+    </div>
+    {/* )} */}
   </div>
 );
 

@@ -1,4 +1,3 @@
-
 // export default function Loader() {
 //   return (
 //     <div className="flex flex-col items-center justify-center w-full h-[60vh]">
@@ -15,6 +14,8 @@
 //     </div>
 //   );
 // }
+
+
 
 
 
@@ -38,3 +39,5 @@ export default function Loader() {
     </div>
   );
 }
+
+

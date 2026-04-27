@@ -14,7 +14,7 @@ export default function SearchBar({ value, onChange }: Props) {
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Search items..."
-        className="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl py-4 pl-12 pr-10 shadow-sm
+        className="w-full bg-white  border border-gray-200  rounded-xl py-4 pl-12 pr-10 shadow-sm
  focus:border-blue-400 focus:ring-2 focus:ring-blue-200 focus:outline-none"
       />
 
