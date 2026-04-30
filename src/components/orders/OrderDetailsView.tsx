@@ -163,6 +163,7 @@ const OrderDetailsView = () => {
           <OrderRemarks
             gid={Number(gid)}
             initialRemarks={orderDetails[0]?.remarks}
+             invoiceStatus={invoiceStatus}
           />
         )}
         {/* Items */}
@@ -178,120 +179,11 @@ const OrderDetailsView = () => {
           // <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {orderDetails.map((item) => {
-              // const invoice = orderInvoices.find(
-              //   (inv) => inv.prod_code === item.prod_code,
-              // );
               const image = productMap[item.prod_code];
               // const fallback = `https://nanmastagingapi.milma.in/products/2005/${item.prod_code}.png`;
               const fallback = `https://mobile.milma.in/products/2005/${item.prod_code}.png`;
 
-
               return (
-                //     <div
-                //       key={item.inddet_gid}
-                //       className="bg-white rounded-2xl border border-gray-200
-                //            shadow-sm p-5 space-y-4"
-                //     >
-                //       <div className="w-20 h-20 rounded-xl overflow-hidden border border-gray-200 bg-gray-100 flex-shrink-0">
-                //         <img
-                //           src={image || fallback}
-                //           alt={item.prod_name}
-                //           className="w-full h-full object-cover"
-                //         />
-                //       </div>
-                //       {/* Product Info */}
-                //       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-                //         <div>
-                //           <p className="font-semibold text-gray-800">
-                //             {item.prod_name}
-                //           </p>
-                //           <p className="text-sm text-gray-500">
-                //             Qty: {item.ind_qty} nos
-                //           </p>
-                //           <p className="text-sm text-gray-500">
-                //             Rate: ₹{Number(item.rate).toFixed(2)}
-                //           </p>
-                //         </div>
-
-                //         <div className="text-left sm:text-right">
-                //           <p className="text-sm text-gray-500">Total</p>
-                //           <p className="text-lg font-semibold text-emerald-600">
-                //             ₹{Number(item.total).toFixed(2)}
-                //           </p>
-                //         </div>
-                //       </div>
-
-                //       {/* Shift Card */}
-                //       <div
-                //         className="bg-orange-50 border border-orange-200
-                //  rounded-xl p-4 flex flex-col sm:flex-row
-                //  sm:justify-between sm:items-center gap-4"
-                //       >
-                //         {/* Supply Date */}
-                //         <div>
-                //           <p className="font-medium text-orange-600">Supply Date</p>
-                //           <p className="text-sm text-gray-600">
-                //             {item.supply_date}
-                //           </p>
-                //         </div>
-
-                //         {/* Shift with Icon */}
-
-                //         <div className="flex items-center gap-3">
-                //           {item.supply_shift === 1 ? (
-                //             <Sun className="text-yellow-500" size={20} />
-                //           ) : (
-                //             <Moon className="text-indigo-500" size={20} />
-                //           )}
-
-                //           <div>
-                //             <p className="text-sm font-semibold">
-                //               {item.supply_shift === 1
-                //                 ? "Morning Shift"
-                //                 : "Evening Shift"}
-                //             </p>
-                //             <p className="text-xs text-gray-600">
-                //               {shiftcodetext[item.supply_shift.toString()]}
-                //             </p>
-                //           </div>
-                //         </div>
-                //       </div>
-
-                //       {/* Action Buttons */}
-
-                //       <div className="flex flex-col sm:flex-row gap-3">
-                //         {invoiceStatus !== "success" && (
-                //           <>
-                //             {/* Cancel Item */}
-                //             <button
-                //               onClick={() => setCancelItem(item)}
-                //               className="flex-1 flex items-center justify-center gap-2
-                //    border border-red-500 text-red-600
-                //    rounded-xl py-2.5 font-semibold text-sm
-                //    hover:bg-red-50 active:scale-[0.98]
-                //    transition-all duration-200"
-                //             >
-                //               <XCircle size={18} />
-                //               Cancel
-                //             </button>
-
-                //             {/* Update Item */}
-                //             <button
-                //               onClick={() => setSelectedItem(item)}
-                //               className="flex-1 flex items-center justify-center gap-2
-                //    bg-emerald-600 text-white
-                //    rounded-xl py-2.5 font-semibold text-sm
-                //    hover:bg-emerald-700 active:scale-[0.98]
-                //    transition-all duration-200 shadow-sm"
-                //             >
-                //               <Pencil size={18} />
-                //               Update
-                //             </button>
-                //           </>
-                //         )}
-                //       </div>
-                //     </div>
-
                 <div
                   key={item.inddet_gid}
                   className="bg-white rounded-2xl shadow-sm border border-gray-200  p-3 space-y-3"
@@ -342,10 +234,16 @@ const OrderDetailsView = () => {
                   {/* Price */}
                   <div className="flex justify-between text-sm">
                     <p className="text-gray-500">
-                      Rate: ₹{Number(item.rate).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+                      Rate: ₹
+                      {Number(item.rate).toLocaleString("en-IN", {
+                        minimumFractionDigits: 2,
+                      })}
                     </p>
                     <p className="font-semibold text-[#0195db]">
-                      Total: ₹{Number(item.total).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+                      Total: ₹
+                      {Number(item.total).toLocaleString("en-IN", {
+                        minimumFractionDigits: 2,
+                      })}
                     </p>
                   </div>
 
@@ -420,105 +318,6 @@ const OrderDetailsView = () => {
         )}
 
         {/* ✅ TOP ACTION BAR */}
-
-        {/* {invoiceStatus === "success" && (
-          <div className="mb-6 w-full space-y-3">
-            <button
-              onClick={async () => {
-                // ✅ SINGLE INVOICE
-                // if (!isMultiple && orderInvoices.length === 1) {
-                //   const inv = orderInvoices[0];
-                if (!isMultiple && uniqueInvoices.length === 1) {
-                  const inv = uniqueInvoices[0];
-
-                  setLoadingInvoiceId(inv.inv_gid);
-                  try {
-                    await fetchInvoiceDetails(inv.inv_gid);
-                    setOpenInvoiceModal(true);
-                  } finally {
-                    setLoadingInvoiceId(null);
-                  }
-                }
-
-                // ✅ MULTIPLE
-                if (isMultiple) {
-                  setShowInvoiceDropdown((p) => !p);
-                }
-              }}
-              disabled={
-                !isMultiple && loadingInvoiceId === uniqueInvoices[0]?.inv_gid
-              }
-              className={`w-full flex items-center justify-center gap-2
-        py-3 rounded-xl font-semibold text-sm
-        transition-all duration-200
-        ${
-          !isMultiple && loadingInvoiceId === uniqueInvoices[0]?.inv_gid
-            ? "bg-gray-300 text-white cursor-not-allowed"
-            : "bg-[#0195db] text-white hover:bg-blue-500 active:scale-[0.98]"
-        }`}
-            >
-              {!isMultiple &&
-              loadingInvoiceId === uniqueInvoices[0]?.inv_gid ? (
-                <>
-                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Loading Invoice...
-                </>
-              ) : (
-                <>📄 {isMultiple ? "Select Invoice" : "View Invoice"}</>
-              )}
-            </button>
-
-            {isMultiple && showInvoiceDropdown && (
-              <div className="w-full bg-white border border-gray-200 rounded-2xl p-4 shadow-sm space-y-4">
-                <select
-                  value={selectedInvoiceId ?? ""}
-                  onChange={(e) => setSelectedInvoiceId(Number(e.target.value))}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
-            focus:ring-2 focus:ring-[#0195db] outline-none"
-                >
-                  <option value="">Select Invoice</option>
-                  {uniqueInvoices.map((inv) => (
-                    <option key={inv.inv_gid} value={inv.inv_gid}>
-                      #{inv.inv_no} • {inv.inv_date}
-                    </option>
-                  ))}
-                </select>
-
-                <button
-                  disabled={!selectedInvoiceId || isViewing}
-                  onClick={async () => {
-                    if (!selectedInvoiceId) return;
-
-                    setIsViewing(true);
-                    try {
-                      await fetchInvoiceDetails(selectedInvoiceId);
-                      setOpenInvoiceModal(true);
-                      setShowInvoiceDropdown(false);
-                    } finally {
-                      setIsViewing(false); // ✅ ALWAYS RESET
-                    }
-                  }}
-                  className={`w-full py-2.5 rounded-xl text-sm font-semibold
-    flex items-center justify-center gap-2
-    ${
-      selectedInvoiceId
-        ? "bg-emerald-600 text-white"
-        : "bg-gray-200 text-gray-400"
-    }`}
-                >
-                  {isViewing ? (
-                    <>
-                      <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      Loading Invoice...
-                    </>
-                  ) : (
-                    "View Selected Invoice"
-                  )}
-                </button>
-              </div>
-            )}
-          </div>
-        )} */}
 
         {invoiceStatus === "success" && (
           <div

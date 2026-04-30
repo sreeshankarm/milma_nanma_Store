@@ -1,10 +1,15 @@
 import { useState } from "react";
-import { storeFeedbackApi, getFeedbackByIdApi } from "../../api/feedback.api";
+import {
+  storeFeedbackApi,
+  getFeedbackByIdApi,
+  getFeedbackByDateRangeApi,
+} from "../../api/feedback.api";
 import { FeedbackContext } from "../../context/feedback/FeedbackContext";
 import { toast } from "react-toastify";
 import type {
   StoreFeedbackPayload,
-  GetFeedbackResponse,
+  // GetFeedbackResponse,
+  FeedbackItem,
 } from "../../types/feedback";
 
 export const FeedbackProvider = ({
@@ -14,9 +19,11 @@ export const FeedbackProvider = ({
 }) => {
   const [loading, setLoading] = useState(false);
   //   const [feedback, setFeedback] = useState<any>(null);
-  const [feedbackList, setFeedbackList] = useState<
-    GetFeedbackResponse["data"][]
-  >([]);
+  // const [feedbackList, setFeedbackList] = useState<
+  //   GetFeedbackResponse["data"][]
+  // >([]);
+  const [feedbackList, setFeedbackList] = useState<FeedbackItem[]>([]);
+  const [getfeedbackloading, setGetfeedbackLoading] = useState(false);
 
   /* ---------- SUBMIT ---------- */
 
@@ -45,6 +52,20 @@ export const FeedbackProvider = ({
 
   /* ---------- GET BY ID ---------- */
 
+  // const getFeedbackById = async (id: number) => {
+  //   try {
+  //     setLoading(true);
+
+  //     const { data } = await getFeedbackByIdApi(id);
+
+  //     if (data.status) {
+  //       setFeedbackList((prev) => [data.data, ...prev]); // ✅ add to list
+  //     }
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const getFeedbackById = async (id: number) => {
     try {
       setLoading(true);
@@ -52,11 +73,37 @@ export const FeedbackProvider = ({
       const { data } = await getFeedbackByIdApi(id);
 
       if (data.status) {
-        setFeedbackList((prev) => [data.data, ...prev]); // ✅ add to list
+        setFeedbackList((prev) => [
+          {
+            ...data.data,
+            feedback_date: "", // ✅ fallback
+          },
+          ...prev,
+        ]);
       }
     } finally {
       setLoading(false);
     }
+  };
+
+  const getFeedbackByDateRange = async (from: string, to: string) => {
+    try {
+      setGetfeedbackLoading(true);
+
+      const { data } = await getFeedbackByDateRangeApi(from, to);
+
+      if (data.status) {
+        setFeedbackList(data.data); // ✅ includes feedback_date
+      }
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Error");
+    } finally {
+      setGetfeedbackLoading(false);
+    }
+  };
+
+  const clearFeedback = () => {
+    setFeedbackList([]);
   };
 
   return (
@@ -66,6 +113,9 @@ export const FeedbackProvider = ({
         feedbackList,
         submitFeedback,
         getFeedbackById,
+        getFeedbackByDateRange,
+        clearFeedback,
+        getfeedbackloading,
       }}
     >
       {children}

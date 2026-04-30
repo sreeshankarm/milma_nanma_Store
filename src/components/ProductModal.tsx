@@ -362,7 +362,7 @@ export default function ProductModal({
             : isEdit
               ? "Update Item"
               : mode === "confirm"
-                ? "Confirm to Add"
+                ? "Save Order"
                 : "Add to Cart"}
         </button>
       </div>

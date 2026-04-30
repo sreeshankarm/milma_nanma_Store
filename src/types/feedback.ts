@@ -22,3 +22,19 @@ export interface GetFeedbackResponse {
     file_type?: string;
   };
 }
+
+
+export interface FeedbackItem {
+  id: number;
+  customer_id: number;
+  feedback_text: string;
+  file_url?: string;
+  file_type?: string;
+  feedback_date?: string;
+  
+}
+
+export interface GetFeedbackListResponse {
+  status: boolean;
+  data: FeedbackItem[];
+}

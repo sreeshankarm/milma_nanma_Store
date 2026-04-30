@@ -7,9 +7,15 @@ interface Props {
   gid: number;
   initialRemarks: string | null;
   onUpdated?: () => void;
+  invoiceStatus?: string;
 }
 
-const OrderRemarks: React.FC<Props> = ({ gid, initialRemarks, onUpdated }) => {
+const OrderRemarks: React.FC<Props> = ({
+  gid,
+  initialRemarks,
+  onUpdated,
+  invoiceStatus,
+}) => {
   const [isEdit, setIsEdit] = useState(false);
   const [remarks, setRemarks] = useState("");
   const [originalRemarks, setOriginalRemarks] = useState("");
@@ -24,29 +30,6 @@ const OrderRemarks: React.FC<Props> = ({ gid, initialRemarks, onUpdated }) => {
 
   // ✅ Enable button only if changed
   const isChanged = remarks.trim() !== originalRemarks;
-
-  // const handleUpdate = async () => {
-  //   try {
-  //     setLoading(true);
-
-  //     await updateOrderRemarksApi({
-  //       gid,
-  //       remarks: remarks.trim(),
-  //     });
-
-  //     toast.success("Remarks updated successfully");
-
-  //     // Update original value after success
-  //     setOriginalRemarks(remarks.trim());
-
-  //     setIsEdit(false);
-  //     onUpdated?.();
-  //   } catch (error: any) {
-  //     toast.error(error?.response?.data?.message || "Failed to update remarks");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   const handleUpdate = async () => {
     const trimmed = remarks.trim();
@@ -90,17 +73,7 @@ const OrderRemarks: React.FC<Props> = ({ gid, initialRemarks, onUpdated }) => {
       <div className="flex items-center justify-between mb-2">
         <h3 className="font-semibold text-gray-700">Order Remarks</h3>
 
-        {/* {!isEdit && (
-          <button
-            onClick={() => setIsEdit(true)}
-            className="flex items-center gap-1 text-sm text-gray-500 hover:text-blue-600"
-          >
-            <Pencil size={16} />
-            Edit
-          </button>
-        )} */}
-
-        {!isEdit && (
+        {!isEdit && invoiceStatus !== "success" && appAccess?.indent === 1 && (
           <button
             onClick={() => setIsEdit(true)}
             className="flex items-center gap-2
@@ -127,7 +100,7 @@ const OrderRemarks: React.FC<Props> = ({ gid, initialRemarks, onUpdated }) => {
       )}
 
       {/* Edit Mode */}
-      {isEdit && appAccess?.indent === 1 && (
+      {isEdit && (
         <div className="flex flex-col sm:flex-row gap-3">
           <input
             type="text"
@@ -136,18 +109,6 @@ const OrderRemarks: React.FC<Props> = ({ gid, initialRemarks, onUpdated }) => {
             className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 break-words"
             placeholder="Enter remarks..."
           />
-
-          {/* <button
-            onClick={handleUpdate}
-            disabled={loading || !isChanged}
-            className={`px-4 rounded-lg transition text-white ${
-              loading || !isChanged
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700"
-            }`}
-          >
-            {loading ? "Updating..." : "Update"}
-          </button> */}
 
           <button
             onClick={handleUpdate}
