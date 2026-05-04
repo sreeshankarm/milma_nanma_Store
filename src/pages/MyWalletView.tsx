@@ -26,6 +26,18 @@ export const MyWalletView: React.FC = () => {
   const totalCredit = ledger.reduce((sum, item) => sum + Number(item.cr), 0);
   const totalDebit = ledger.reduce((sum, item) => sum + Number(item.dr), 0);
 
+    /* ---------- FORMAT DATE ---------- */
+  const formatDateTime = (date: string) => {
+    const d = new Date(date);
+    return d.toLocaleString("en-IN", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      // hour: "2-digit",
+      // minute: "2-digit",
+    });
+  };
+
   return (
     <div className="min-h-screen py-6 sm:py-10">
       <div className=" mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
@@ -116,71 +128,7 @@ export const MyWalletView: React.FC = () => {
           </div>
 
           {/* TABLE */}
-          {/* <div className="overflow-x-auto max-h-[500px]">
-            <table className="min-w-full text-sm divide-y divide-gray-200">
-              <thead className="bg-gray-100 text-xs uppercase text-gray-500 sticky top-0 z-10">
-                <tr>
-                  <th className="px-6 py-3 text-left">Description</th>
-                  <th className="px-6 py-3 text-left">Date</th>
-                  <th className="px-6 py-3 text-right">Credit</th>
-                  <th className="px-6 py-3 text-right">Debit</th>
-                  <th className="px-6 py-3 text-right">Balance</th>
-                </tr>
-              </thead>
-
-              <tbody className="divide-y">
-                {loading && (
-                  <tr>
-                    <td colSpan={5} className="text-center py-6 text-gray-500">
-                      Loading...
-                    </td>
-                  </tr>
-                )}
-
-                {!loading && ledger.length === 0 && (
-                  <tr>
-                    <td colSpan={5} className="text-center py-8 text-gray-400">
-                      No records found
-                    </td>
-                  </tr>
-                )}
-
-                {ledger.map((item, i) => (
-                  <tr key={i} className="hover:bg-gray-50 transition">
-                    <td className="px-6 py-4 font-medium text-gray-800">
-                      {item.descn}
-                    </td>
-
-                    <td className="px-6 py-4 text-gray-500">
-                      {new Date(item.tr_date).toLocaleDateString()}
-                    </td>
-
-                    <td className="px-6 py-4 text-right font-semibold text-emerald-600">
-                      {Number(item.cr) > 0
-                        ? `₹${Number(item.cr).toFixed(2)}`
-                        : "-"}
-                    </td>
-
-                    <td className="px-6 py-4 text-right font-semibold text-red-500">
-                      {Number(item.dr) > 0
-                        ? `₹${Number(item.dr).toFixed(2)}`
-                        : "-"}
-                    </td>
-
-                    <td
-                      className={`px-6 py-4 text-right font-bold ${
-                        Number(item.balance) < 0
-                          ? "text-red-600"
-                          : "text-gray-800"
-                      }`}
-                    >
-                      ₹{Number(item.balance).toFixed(2)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div> */}
+       
 
           <div className="relative bg-white rounded-2xl border border-gray-300  overflow-hidden">
             {/* TABLE SCROLL */}
@@ -190,7 +138,7 @@ export const MyWalletView: React.FC = () => {
                 <thead className="bg-gray-100 text-xs uppercase text-gray-500 sticky top-0 z-10">
                   <tr>
                     <th className="px-6 py-3 text-left">Description</th>
-                    <th className="px-6 py-3 text-left">Date</th>
+                    <th className="px-6 py-3 text-right">Date</th>
                     <th className="px-6 py-3 text-right">Credit</th>
                     <th className="px-6 py-3 text-right">Debit</th>
                     <th className="px-6 py-3 text-right">Balance</th>
@@ -248,8 +196,8 @@ export const MyWalletView: React.FC = () => {
                           {item.descn}
                         </td>
 
-                        <td className="px-6 py-4 text-gray-500">
-                          {new Date(item.tr_date).toLocaleDateString()}
+                        <td className="px-6 py-4 text-right text-gray-500">
+                          {formatDateTime(item.tr_date)}
                         </td>
 
                         <td className="px-6 py-4 text-right font-semibold text-emerald-600">

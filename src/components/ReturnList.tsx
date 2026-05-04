@@ -1,6 +1,6 @@
 import React from "react";
 import type { InvoiceGroup, Acknowledgement } from "../types";
-import { RotateCw } from "lucide-react";
+import { RotateCw, Calendar } from "lucide-react";
 
 interface Props {
   items: InvoiceGroup[];
@@ -21,7 +21,7 @@ const ReturnList: React.FC<Props> = ({ items, loading, onSelect }) => {
 
   /* ---------- EMPTY ---------- */
   if (!items.length) {
-       return (
+    return (
       <div className="flex flex-col items-center justify-center py-12 text-gray-500">
         <RotateCw size={40} className="mb-3 text-gray-400" />
         <p className="text-center text-gray-500">
@@ -39,9 +39,9 @@ const ReturnList: React.FC<Props> = ({ items, loading, onSelect }) => {
           0,
         );
 
-        const hasAck = inv.items.some(
-          (item) => (item.acknowledgements?.length ?? 0) > 0,
-        );
+        // const hasAck = inv.items.some(
+        //   (item) => (item.acknowledgements?.length ?? 0) > 0,
+        // );
 
         return (
           <div
@@ -73,8 +73,12 @@ const ReturnList: React.FC<Props> = ({ items, loading, onSelect }) => {
             flex flex-col h-full
 
             ${
-              hasAck
-                ? "border-red-400 ring-1 ring-red-200 bg-red-50 "
+              // hasAck
+              //   ? "border-red-400 ring-1 ring-red-200 bg-red-50 "
+              //   : "border-gray-200 hover:border-gray-300"
+
+              inv.delivery_status
+                ? "border-green-400 ring-1 ring-green-100"
                 : "border-gray-200 hover:border-gray-300"
             }
           `}
@@ -90,20 +94,26 @@ const ReturnList: React.FC<Props> = ({ items, loading, onSelect }) => {
                 <p className="text-xs text-gray-500 mt-1 truncate">
                   Vehicle: {inv.vehicle_full}
                 </p>
+
+                <div className="flex items-center gap-1 mt-1 text-gray-500">
+                  <Calendar size={14} className="text-gray-400 shrink-0" />
+                  <span className="text-xs truncate">{inv.inv_date}</span>
+                </div>
               </div>
 
-              {/* RIGHT (DATE BADGE) */}
+              {/* RIGHT (Delivered BADGE) */}
               <div className="ml-3 shrink-0">
                 <span
-                  className="
-                  inline-flex items-center
-                  text-xs font-medium
-                  bg-blue-50 text-blue-600
-                  px-3 py-1
-                  rounded-full
-                "
+                  className={`
+             text-xs font-semibold px-3 py-1 rounded-full
+            whitespace-nowrap
+            ${
+              inv.delivery_status
+                ? "bg-green-50 text-green-600"
+                : "bg-[#fffbeb] text-[#be6826]"
+            }`}
                 >
-                  {inv.inv_date}
+                  {inv.delivery_status ? "Delivered" : "Not Delivered"}
                 </span>
               </div>
             </div>
@@ -141,7 +151,10 @@ const ReturnList: React.FC<Props> = ({ items, loading, onSelect }) => {
 
                     {/* PRICE */}
                     <p className="text-sm font-semibold text-emerald-600 text-right min-w-[80px]">
-                      ₹{Number(item.basic_amt).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+                      ₹
+                      {Number(item.basic_amt).toLocaleString("en-IN", {
+                        minimumFractionDigits: 2,
+                      })}
                     </p>
                   </div>
                 ))}

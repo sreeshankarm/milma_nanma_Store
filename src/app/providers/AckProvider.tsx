@@ -42,6 +42,9 @@ export const AckProvider = ({ children }: { children: React.ReactNode }) => {
           inv_no: Number(inv.inv_no),
           inv_date: inv.inv_date,
           vehicle_full: inv.vehicle_full,
+          delivery_status: Boolean(inv.delivery_status),
+          islocked: Boolean(inv.islocked),
+
 
           items: details.map((item: any) => ({
             invdet_gid: Number(item.invdet_gid),

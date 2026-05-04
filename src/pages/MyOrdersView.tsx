@@ -4,6 +4,7 @@ import DatePicker from "../components/orders/Datepicker";
 import OrdersListnew from "../components/orders/OrdersListnew";
 import HeaderCard from "../components/orders/HeaderCard";
 import { useNavigate } from "react-router-dom";
+import { Loader2, History } from "lucide-react";
 
 const MyOrdersView: React.FC = () => {
   const { orders, fetchOrders, startDate, endDate, setDates } = useOrder();
@@ -82,14 +83,34 @@ const MyOrdersView: React.FC = () => {
 
               {/* Button */}
               <div className="md:col-span-2 mt-2">
-                <button
+                {/* <button
                   onClick={handleFetch}
                   disabled={!startDate || !endDate}
                   className="w-full h-11 sm:h-12 rounded-xl bg-emerald-600 text-white font-semibold text-sm sm:text-base
         hover:bg-emerald-700 disabled:bg-gray-300 
         transition active:scale-[0.98] cursor-pointer"
                 >
-                  {loading ? "Loading..." : "Get Orders"}
+                  {loading ? "Loading..." : "Get Previous Orders"}
+                </button> */}
+                <button
+                  onClick={handleFetch}
+                  disabled={!startDate || !endDate}
+                  className="w-full h-11 sm:h-12 rounded-xl bg-emerald-600 text-white font-semibold text-sm sm:text-base
+  hover:bg-emerald-700 disabled:bg-gray-300 
+  transition active:scale-[0.98] cursor-pointer
+  flex items-center justify-center gap-2"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="animate-spin" size={18} />
+                      Loading...
+                    </>
+                  ) : (
+                    <>
+                      <History size={18} />
+                      Get Previous Orders
+                    </>
+                  )}
                 </button>
               </div>
             </div>

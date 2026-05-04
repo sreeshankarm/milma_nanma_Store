@@ -10,7 +10,7 @@ import {
   Loader2,
   PlusCircle,
   Truck,
-  Calendar,
+  // Calendar,
 } from "lucide-react";
 
 import { useAck } from "../context/ack/useAck";
@@ -48,7 +48,7 @@ export default function ReturnRequestModal({ invoice, onClose }: Props) {
   // const [loading, setLoading] = useState(false);
 
   // ✅ separate loading states
-  const [loadingData, setLoadingData] = useState(false);
+  // const [loadingData, setLoadingData] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   /* FETCH PRODUCTS */
@@ -134,14 +134,14 @@ export default function ReturnRequestModal({ invoice, onClose }: Props) {
     selectedItems[id]?.rows.reduce((sum, r) => sum + r.qty, 0) || 0;
 
   /* VIEW MODE (ACK EXISTS) */
-  const isViewMode = useMemo(() => {
-    return items.some((i) => i.acknowledgements?.length > 0);
-  }, [items]);
+  // const isViewMode = useMemo(() => {
+  //   return items.some((i) => i.acknowledgements?.length > 0);
+  // }, [items]);
 
   /* SELECT ITEM */
 
   const handleSelect = (id: string) => {
-    if (isViewMode) return;
+    // if (isViewMode) return;
 
     setSelectedItems((prev) => {
       const copy = { ...prev };
@@ -292,7 +292,10 @@ export default function ReturnRequestModal({ invoice, onClose }: Props) {
             faults: faultTypes.map((f: any) => ({
               fault_id: f.id,
               fault_name: f.name,
-              qty: data.rows.find((r) => r.faultId === f.id)?.qty ?? 0,
+              // qty: data.rows.find((r) => r.faultId === f.id)?.qty ?? 0,
+              qty: data.rows
+                .filter((r) => r.faultId === f.id)
+                .reduce((sum, r) => sum + r.qty, 0),
             })),
           };
         }),
@@ -360,16 +363,27 @@ export default function ReturnRequestModal({ invoice, onClose }: Props) {
 
   useEffect(() => {
     const load = async () => {
-      try {
-        setLoadingData(true);
-        const today = new Date().toISOString().split("T")[0];
-        await fetchProducts(today);
-      } finally {
-        setLoadingData(false);
-      }
+      // try {
+      //   setLoadingData(true);
+      const today = new Date().toISOString().split("T")[0];
+      await fetchProducts(today);
+      // } finally {
+      //   setLoadingData(false);
+      // }
     };
     load();
   }, [invoice.inv_gid]);
+
+  const reportedItems = items.filter(
+    (item) => item.acknowledgements?.length > 0,
+  );
+
+  // const selectableItems = items.filter(
+  //   (item) => item.acknowledgements?.length === 0,
+  // );
+  const selectableItems = items; // show ALL items always
+
+  const isLocked = invoice.islocked === true;
 
   return (
     // <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50 p-4">
@@ -378,17 +392,16 @@ export default function ReturnRequestModal({ invoice, onClose }: Props) {
       {/* <div className="relative bg-white w-full max-w-2xl h-[92vh] rounded-2xl shadow-xl flex flex-col overflow-hidden"> */}
       <div className="relative bg-white w-full sm:max-w-2xl h-[95dvh] sm:h-[92vh] rounded-t-3xl sm:rounded-2xl shadow-xl flex flex-col overflow-hidden">
         {/* ✅ LOADER OVERLAY */}
-        {loadingData && (
+        {/* {loadingData && (
           <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-white/70 ">
             <div className="h-10 w-10 border-2 border-[#8e2d26] border-t-transparent rounded-full animate-spin" />
           </div>
-        )}
+        )} */}
         {/* HEADER */}
         <div className="border-b px-6 py-4 flex justify-between items-center bg-white">
           <div className="flex items-center gap-2 font-semibold text-gray-800">
             <Package size={18} />
-            {/* Return Request */}
-            {isViewMode ? "View Acknowledgement" : "Return Request"}
+            Return Request
           </div>
 
           <button
@@ -402,26 +415,31 @@ export default function ReturnRequestModal({ invoice, onClose }: Props) {
         {/* BODY */}
         <div className="flex-1 overflow-y-auto px-5 py-4 space-y-5 bg-gray-50 thin-scroll">
           {/* SUMMARY */}
-          <div
-            // className="rounded-xl border border-gray-400 bg-white p-4 shadow-sm"
-            className={`
-    rounded-xl border p-4 shadow-sm
-    ${isViewMode ? "bg-blue-50 border-blue-300" : "bg-white border-gray-300"}
+          {!isLocked && (
+            <>
+              <div
+                // className="rounded-xl border border-gray-400 bg-white p-4 shadow-sm"
+                className={`
+    rounded-xl border p-4 shadow-sm bg-blue-50 border-blue-300
   `}
-          >
-            <p className="font-semibold text-gray-800 mb-2">
-              Invoice: #{invoice.inv_no}
-            </p>
+              >
+                <p className="font-semibold text-gray-800 mb-2">
+                  Invoice: #{invoice.inv_no}
+                </p>
 
-            <div className="flex justify-between text-sm text-gray-600">
-              <span className="text-xs text-gray-600 italic">
-                Total Qty: {totalQty}
-              </span>
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span className="text-xs text-gray-600 italic">
+                    Total Qty: {totalQty}
+                  </span>
 
-              {/* <span className="font-semibold text-[#0195db]">
-                Total : ₹{totalAmount.toFixed(2)}
-              </span> */}
-              <span className="font-semibold text-[#0195db] flex items-center gap-1">
+                  <span className="font-semibold text-[#0195db]">
+                    {/* Total : ₹{totalAmount.toFixed(2)} */}
+                    Total : ₹
+                    {totalAmount.toLocaleString("en-IN", {
+                      minimumFractionDigits: 2,
+                    })}
+                  </span>
+                  {/* <span className="font-semibold text-[#0195db] flex items-center gap-1">
                 {isViewMode ? (
                   <>
                     <Calendar size={14} />
@@ -430,212 +448,248 @@ export default function ReturnRequestModal({ invoice, onClose }: Props) {
                 ) : (
                   <>Total : ₹{totalAmount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</>
                 )}
-              </span>
-            </div>
+              </span> */}
+                </div>
 
-            <p className="text-xs text-gray-600 italic mt-1 flex items-center gap-1">
-              {isViewMode && <Truck size={14} className="text-gray-600" />}
-              Vehicle: {invoice.vehicle_full}
-            </p>
-          </div>
+                <p className="text-xs text-gray-600 italic mt-1 flex items-center gap-1">
+                  <Truck size={14} className="text-gray-600" />
+                  Vehicle: {invoice.vehicle_full}
+                </p>
+              </div>
+            </>
+          )}
 
-          {/* TITLE */}
+          {/* ================= REPORTED ISSUES ================= */}
           <p className="text-sm font-semibold text-gray-700">
-            {isViewMode ? "Reported Issues" : "Select Damaged Items"}
+            Reported Previous Returns
           </p>
 
-          {/* ITEMS */}
-          <div className="space-y-4">
-            {items.map((item) => {
-              const active = !!selectedItems[item.id];
-              const rows = selectedItems[item.id]?.rows || [];
-              const usedQty = getUsedQty(item.id);
-
-              return (
+          {reportedItems.length === 0 ? (
+            <div className="flex items-center justify-center py-6">
+              <p className="text-sm text-gray-400 italic text-center">
+                No Reported Issues
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {reportedItems.map((item) => (
                 <div
                   key={item.id}
-                  className={`rounded-xl border p-4 transition ${
-                    active
-                      ? "border-red-400 bg-red-50"
-                      : "border-gray-200 bg-white"
-                  }`}
+                  className="rounded-xl border border-orange-300 bg-orange-50 p-4"
                 >
-                  {/* ITEM HEADER */}
-                  <div
-                    // onClick={() => handleSelect(item.id)}
-                    // className="flex items-center gap-3 cursor-pointer"
-                    onClick={() => !isViewMode && handleSelect(item.id)}
-                    className={`flex items-center gap-3 ${
-                      isViewMode ? "cursor-default" : "cursor-pointer"
-                    }`}
-                  >
+                  <div className="flex items-center gap-3 ">
                     <img
-                      src={item.image || "https://via.placeholder.com/80"}
+                      src={item.image}
                       className="w-12 h-12 rounded-md object-cover"
                     />
 
-                    <div className="flex-1">
+                    <div className="flex-1 ">
                       <p className="text-sm font-medium text-gray-800">
                         {item.name}
                       </p>
-                      <p className="text-xs text-gray-500">
+                      {/* <p className="text-xs text-gray-500">
                         Invoice Qty: {item.qty}
-                      </p>
+                      </p> */}
                     </div>
-
-                    {/* {!isViewMode && active ? (
-                      <CheckSquare className="text-red-500" size={18} />
-                    ) : (
-                      <Square className="text-gray-400" size={18} />
-                    )} */}
-                    {!isViewMode &&
-                      (active ? (
-                        <CheckSquare className="text-red-500" size={18} />
-                      ) : (
-                        <Square className="text-gray-400" size={18} />
-                      ))}
                   </div>
 
-                  {/* VIEW MODE */}
-
-                  {isViewMode && (
-                    <div className="mt-3">
-                      {item.acknowledgements.length === 0 ? (
-                        <p className="text-xs text-gray-400 italic">
-                          No issues reported
+                  <div className="mt-3 space-y-2">
+                    {item.acknowledgements.map((ack: any, i: number) => (
+                      <div
+                        key={i}
+                        className="bg-white p-2 rounded  border border-gray-200"
+                      >
+                        {ack.faults.map((f: any) => (
+                          <div
+                            key={f.fault_id}
+                            className="flex justify-between text-sm"
+                          >
+                            <span className="text-red-500">{f.fault_name}</span>
+                            <span className="text-xs text-gray-600">
+                              Qty: {f.qty}
+                            </span>
+                          </div>
+                        ))}
+                        <p className="text-xs text-gray-500 mt-1">
+                          Remark: {ack.remarks}
                         </p>
-                      ) : (
-                        item.acknowledgements.map((ack: any, i: number) => (
-                          <div key={i} className="bg-gray-100 p-2 rounded mb-2">
-                            {ack.faults.map((f: any) => (
-                              <div
-                                key={f.fault_id}
-                                className="flex justify-between text-sm"
-                              >
-                                <span
-                                  className={
-                                    f.fault_name === "Good"
-                                      ? "text-green-600"
-                                      : "text-red-500"
-                                  }
-                                >
-                                  {f.fault_name}
-                                </span>
-                                <span className="text-xs text-gray-600 italic">
-                                  Qty: {f.qty}
-                                </span>
-                              </div>
-                            ))}
-                            <p className="text-xs text-gray-500 mt-1">
-                              Remark: {ack.remarks}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* ================= SELECT DAMAGED ITEMS ================= */}
+          {!isLocked && (
+            <>
+              <p className="text-sm font-semibold text-gray-700 mt-4">
+                Select Damaged Items
+              </p>
+
+              {selectableItems.length === 0 ? (
+                <div className="flex items-center justify-center py-6">
+                  <p className="text-sm text-gray-400 italic text-center">
+                    No Damaged Items
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {selectableItems.map((item) => {
+                    const active = !!selectedItems[item.id];
+                    const rows = selectedItems[item.id]?.rows || [];
+                    const usedQty = getUsedQty(item.id);
+
+                    return (
+                      <div
+                        key={item.id}
+                        className={`rounded-xl border p-4 ${
+                          active
+                            ? "border-red-400 bg-red-50"
+                            : "border-gray-200 bg-white"
+                        }`}
+                      >
+                        {/* HEADER */}
+                        <div
+                          onClick={() => handleSelect(item.id)}
+                          className="flex items-center gap-3 cursor-pointer"
+                        >
+                          <img
+                            src={item.image}
+                            className="w-12 h-12 rounded-md object-cover"
+                          />
+
+                          <div className="flex-1">
+                            <p className="text-sm font-medium text-gray-800">
+                              {item.name}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              Invoice Qty: {item.qty}
                             </p>
                           </div>
-                        ))
-                      )}
-                    </div>
-                  )}
 
-                  {/* ACTIVE CONTENT */}
-                  {!isViewMode && active && (
-                    <div className="mt-4 space-y-3">
-                      {rows.map((row, i) => {
-                        const totalUsed = getUsedQty(item.id);
-                        const remaining = item.qty - totalUsed + row.qty;
+                          {active ? (
+                            <CheckSquare className="text-red-500" size={18} />
+                          ) : (
+                            <Square className="text-gray-400" size={18} />
+                          )}
+                        </div>
 
-                        return (
-                          <div
-                            key={i}
-                            className="flex items-center gap-3 bg-white border border-gray-200 rounded-lg p-2"
-                          >
-                            {/* DROPDOWN */}
-                            <select
-                              value={row.faultId}
-                              onChange={(e) =>
-                                changeFault(item.id, i, Number(e.target.value))
-                              }
-                              className="flex-1 border border-gray-400 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#339cff]"
-                            >
-                              {faultTypes.map((f: any) => (
-                                <option key={f.id} value={f.id}>
-                                  {f.name}
-                                </option>
-                              ))}
-                            </select>
+                        {/* FORM */}
+                        {active && (
+                          <div className="mt-4 space-y-3">
+                            {rows.map((row, i) => {
+                              const totalUsed = getUsedQty(item.id);
+                              const remaining = item.qty - totalUsed + row.qty;
 
-                            {/* QTY CONTROL */}
-                            <div className="flex items-center border border-gray-400 rounded-lg ">
-                              <button
-                                disabled={row.qty === 1}
-                                onClick={() => changeQty(item.id, i, -1)}
-                                className={`px-2 py-1 ${
-                                  row.qty === 1
-                                    ? "opacity-50 cursor-not-allowed"
-                                    : ""
-                                }`}
-                              >
-                                <Minus size={14} />
-                              </button>
+                              return (
+                                <div
+                                  key={i}
+                                  className="flex items-center gap-3 bg-white border border-gray-200 rounded-lg p-2"
+                                >
+                                  <select
+                                    value={row.faultId}
+                                    onChange={(e) =>
+                                      changeFault(
+                                        item.id,
+                                        i,
+                                        Number(e.target.value),
+                                      )
+                                    }
+                                    className="flex-1 border border-gray-400 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#339cff]"
+                                  >
+                                    {faultTypes.map((f: any) => (
+                                      <option key={f.id} value={f.id}>
+                                        {f.name}
+                                      </option>
+                                    ))}
+                                  </select>
 
-                              <span className="px-3 text-sm">{row.qty}</span>
+                                  <div className="flex items-center border border-gray-400 rounded-lg">
+                                    <button
+                                      onClick={() => changeQty(item.id, i, -1)}
+                                      disabled={row.qty === 1}
+                                      className={`px-2 py-1 ${
+                                        row.qty === 1
+                                          ? "opacity-50 cursor-not-allowed"
+                                          : ""
+                                      }`}
+                                    >
+                                      <Minus
+                                        size={14}
+                                        className="text-blue-500"
+                                      />
+                                    </button>
 
-                              <button
-                                disabled={row.qty >= remaining}
-                                onClick={() => changeQty(item.id, i, 1)}
-                                className={`px-2 py-1 ${
-                                  row.qty >= remaining
-                                    ? "opacity-40 cursor-not-allowed"
-                                    : ""
-                                }`}
-                              >
-                                <Plus size={14} />
-                              </button>
-                            </div>
+                                    <span className="px-2">{row.qty}</span>
 
-                            {/* DELETE */}
+                                    <button
+                                      onClick={() => changeQty(item.id, i, 1)}
+                                      disabled={row.qty >= remaining}
+                                      className={`px-2 py-1 ${
+                                        row.qty >= remaining
+                                          ? "opacity-40 cursor-not-allowed"
+                                          : ""
+                                      }`}
+                                    >
+                                      <Plus
+                                        size={14}
+                                        className="text-blue-500"
+                                      />
+                                    </button>
+                                  </div>
+
+                                  <button
+                                    onClick={() => deleteRow(item.id, i)}
+                                    disabled={i === 0}
+                                    className={`${
+                                      i === 0
+                                        ? "text-gray-300 cursor-not-allowed disabled:opacity-30"
+                                        : "text-red-500 hover:text-red-600"
+                                    }`}
+                                  >
+                                    <Trash2
+                                      size={16}
+                                      className="text-red-500"
+                                    />
+                                  </button>
+                                </div>
+                              );
+                            })}
+
                             <button
-                              disabled={i === 0}
-                              onClick={() => deleteRow(item.id, i)}
-                              className={`${
-                                i === 0
-                                  ? "text-gray-300 cursor-not-allowed disabled:opacity-30"
-                                  : "text-red-500 hover:text-red-600"
-                              }`}
+                              disabled={usedQty >= item.qty}
+                              onClick={() => addRow(item.id)}
+                              className="text-green-600 text-xs flex items-center gap-1 font-medium disabled:opacity-40 cursor-pointer"
                             >
-                              <Trash2 size={16} className="text-red-500" />
+                              <PlusCircle size={14} />
+                              Add Another Damage Entry
                             </button>
+
+                            <textarea
+                              placeholder={`Remarks for ${item.name}`}
+                              value={selectedItems[item.id]?.remarks || ""}
+                              onChange={(e) =>
+                                changeRemarks(item.id, e.target.value)
+                              }
+                              className="w-full border  border-gray-400 rounded-xl p-3 text-sm outline-none focus:border-[#339cff] "
+                            />
                           </div>
-                        );
-                      })}
-
-                      {/* ADD */}
-
-                      <button
-                        disabled={usedQty >= item.qty}
-                        onClick={() => addRow(item.id)}
-                        className="text-green-600 text-xs flex items-center gap-1 font-medium disabled:opacity-40 cursor-pointer"
-                      >
-                        <PlusCircle size={14} />
-                        Add Another Damage Entry
-                      </button>
-
-                      {/* REMARKS PER ITEM */}
-                      <textarea
-                        placeholder={`Remarks for ${item.name}`}
-                        value={selectedItems[item.id]?.remarks || ""}
-                        onChange={(e) => changeRemarks(item.id, e.target.value)}
-                        className="w-full border  border-gray-400 rounded-xl p-3 text-sm outline-none focus:border-[#339cff] "
-                      />
-                    </div>
-                  )}
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
-              );
-            })}
-          </div>
+              )}
+            </>
+          )}
         </div>
 
         {/* FOOTER */}
 
-        {!isViewMode && canSubmit && (
+        {/* {!isViewMode && canSubmit && ( */}
+        {canSubmit && !isLocked && (
           <div className="border-t p-4 bg-white">
             <button
               // disabled={!isValid || loading}

@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { ArrowRight, RefreshCcw } from "lucide-react";
+import { ArrowRight, RefreshCcw, Loader2, FileSearch } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAck } from "../context/ack/useAck";
 import ReturnList from "../components/ReturnList";
 import type { InvoiceGroup } from "../types";
 import ReturnRequestModal from "../components/ReturnRequestModal";
+import { toast } from "react-toastify";
 
 export default function ReturnRequestsView() {
   const { fetchAckList, ackList, startDate, endDate, setDates } = useAck();
@@ -52,10 +53,7 @@ export default function ReturnRequestsView() {
     loadReturns();
   }, []);
 
-
-
-
-   const handleFetch = async () => {
+  const handleFetch = async () => {
     if (!startDate || !endDate) return;
 
     try {
@@ -76,8 +74,6 @@ export default function ReturnRequestsView() {
 
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold">Return Requests</h1>
-
-     
       </div>
 
       {/* START CARD */}
@@ -111,7 +107,7 @@ export default function ReturnRequestsView() {
             value={startDate}
             max={endDate}
             // onChange={setStartDate}
-             onChange={(val: string) => setDates(val, endDate)}
+            onChange={(val: string) => setDates(val, endDate)}
           />
 
           <InputDate
@@ -124,13 +120,34 @@ export default function ReturnRequestsView() {
           />
 
           <div className="sm:col-span-2 mt-3">
-            <button
+            {/* <button
               onClick={handleFetch}
               disabled={!startDate || !endDate}
               className="w-full h-11 sm:h-12 rounded-xl bg-emerald-600 text-white font-semibold
               hover:bg-emerald-700 disabled:bg-gray-300 cursor-pointer "
             >
               {loading ? "Loading..." : "Get Requests"}
+
+
+            </button> */}
+
+            <button
+              onClick={handleFetch}
+              disabled={!startDate || !endDate}
+              className="w-full h-11 sm:h-12 rounded-xl bg-emerald-600 text-white font-semibold
+  hover:bg-emerald-700 disabled:bg-gray-300 flex items-center justify-center gap-2 cursor-pointer"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="animate-spin" size={18} />
+                  Loading...
+                </>
+              ) : (
+                <>
+                  <FileSearch size={18} />
+                  Get Requests
+                </>
+              )}
             </button>
           </div>
         </div>
@@ -142,7 +159,15 @@ export default function ReturnRequestsView() {
         items={ackList}
         loading={loading}
         // onSelect={(inv) => setSelectedInv(inv)}
-        onSelect={setSelectedInv}
+        // onSelect={setSelectedInv}
+        onSelect={(inv) => {
+          // if (!inv.delivery_status) return; // ❌ block modal
+          if (!inv.delivery_status) {
+            toast.warning("The invoice is not yet delivered");
+            return;
+          }
+          setSelectedInv(inv); // ✅ allow only delivered
+        }}
       />
 
       {selectedInv && (

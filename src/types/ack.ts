@@ -36,6 +36,9 @@ export interface InvoiceGroup {
   inv_no: number;
   inv_date: string;
   vehicle_full: string;
+  delivery_status: boolean;
+  islocked: boolean;
+
   items: {
     invdet_gid: number;
     prod_name: string;
