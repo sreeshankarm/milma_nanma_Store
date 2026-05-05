@@ -11,6 +11,9 @@ import {
   PlusCircle,
   Truck,
   // Calendar,
+  ChevronDown,
+  RotateCcw,
+  AlertTriangle,
 } from "lucide-react";
 
 import { useAck } from "../context/ack/useAck";
@@ -385,6 +388,9 @@ export default function ReturnRequestModal({ invoice, onClose }: Props) {
 
   const isLocked = invoice.islocked === true;
 
+  /* ACCORDION STATE */
+  const [openPrevReturns, setOpenPrevReturns] = useState(false);
+
   return (
     // <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50 p-4">
     <div className="fixed inset-0 z-50 bg-black/40 flex justify-center items-end sm:items-center">
@@ -460,73 +466,101 @@ export default function ReturnRequestModal({ invoice, onClose }: Props) {
           )}
 
           {/* ================= REPORTED ISSUES ================= */}
-          <p className="text-sm font-semibold text-gray-700">
-            Reported Previous Returns
-          </p>
+          <div className="rounded-2xl border border-orange-200 bg-orange-50 overflow-hidden">
+            {/* HEADER */}
+            <div
+              onClick={() => setOpenPrevReturns((p) => !p)}
+              className="flex items-center justify-between px-4 py-3 cursor-pointer select-none"
+            >
+              <div className="flex items-center gap-2">
+                <RotateCcw className="w-4 h-4 text-orange-500" />
+                <p className="text-sm font-semibold text-orange-600">
+                  Previous Returns ({reportedItems.length} items)
+                </p>
+              </div>
 
-          {reportedItems.length === 0 ? (
-            <div className="flex items-center justify-center py-6">
-              <p className="text-sm text-gray-400 italic text-center">
-                No Reported Issues
-              </p>
+              <ChevronDown
+                className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${
+                  openPrevReturns ? "rotate-180" : ""
+                }`}
+              />
             </div>
-          ) : (
-            <div className="space-y-3">
-              {reportedItems.map((item) => (
-                <div
-                  key={item.id}
-                  className="rounded-xl border border-orange-300 bg-orange-50 p-4"
-                >
-                  <div className="flex items-center gap-3 ">
-                    <img
-                      src={item.image}
-                      className="w-12 h-12 rounded-md object-cover"
-                    />
 
-                    <div className="flex-1 ">
-                      <p className="text-sm font-medium text-gray-800">
-                        {item.name}
-                      </p>
-                      {/* <p className="text-xs text-gray-500">
-                        Invoice Qty: {item.qty}
-                      </p> */}
-                    </div>
+            {/* BODY */}
+            {openPrevReturns && (
+              <div className="border-t border-orange-200 px-4 py-3 space-y-4">
+                {reportedItems.length === 0 ? (
+                  <div className="flex items-center justify-center py-6">
+                    <p className="text-sm text-gray-400 italic">
+                      No Reported Issues
+                    </p>
                   </div>
+                ) : (
+                  reportedItems.map((item) => (
+                    <div key={item.id} className="space-y-3">
+                      {/* PRODUCT */}
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={item.image}
+                          className="w-12 h-12 rounded-md object-cover "
+                        />
 
-                  <div className="mt-3 space-y-2">
-                    {item.acknowledgements.map((ack: any, i: number) => (
-                      <div
-                        key={i}
-                        className="bg-white p-2 rounded  border border-gray-200"
-                      >
-                        {ack.faults.map((f: any) => (
-                          <div
-                            key={f.fault_id}
-                            className="flex justify-between text-sm"
-                          >
-                            <span className="text-red-500">{f.fault_name}</span>
-                            <span className="text-xs text-gray-600">
-                              Qty: {f.qty}
-                            </span>
-                          </div>
-                        ))}
-                        <p className="text-xs text-gray-500 mt-1">
-                          Remark: {ack.remarks}
+                        <p className="text-sm font-medium text-gray-800">
+                          {item.name}
                         </p>
                       </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+
+                      {/* ACK LIST */}
+                      <div className="space-y-2 pl-1">
+                        {item.acknowledgements.map((ack: any, i: number) => (
+                          <div
+                            key={i}
+                            className="flex justify-between items-start"
+                          >
+                            {/* FAULTS */}
+                            <div className="space-y-1">
+                              {ack.faults.map((f: any) => (
+                                <p
+                                  key={f.fault_id}
+                                  className="text-sm text-red-500"
+                                >
+                                  • {f.fault_name}
+                                </p>
+                              ))}
+
+                              <p className="text-xs text-gray-500 italic">
+                                Remark: {ack.remarks}
+                              </p>
+                            </div>
+
+                            {/* QTY */}
+                            <div className="text-xs text-gray-600 space-y-1 text-right">
+                              {ack.faults.map((f: any) => (
+                                <p key={f.fault_id}>Qty: {f.qty}</p>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* DIVIDER */}
+                      <div className="border-b border-orange-200"></div>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
 
           {/* ================= SELECT DAMAGED ITEMS ================= */}
           {!isLocked && (
             <>
-              <p className="text-sm font-semibold text-gray-700 mt-4">
-                Select Damaged Items
-              </p>
+              <div className="flex items-center gap-2 mt-4">
+                <AlertTriangle className="w-4 h-4 text-red-500" />
+                <p className="text-sm font-semibold text-gray-700">
+                  Select Damaged Items
+                </p>
+              </div>
 
               {selectableItems.length === 0 ? (
                 <div className="flex items-center justify-center py-6">
