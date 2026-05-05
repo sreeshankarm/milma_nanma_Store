@@ -466,35 +466,58 @@ export const TopUpModal: React.FC<Props> = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleTopUp = async () => {
-    try {
-      setLoading(true);
-      setError("");
+// const handleTopUpClick = async () => {
+//   // ✅ OPEN TAB IMMEDIATELY (no await before this)
+//   const newTab = window.open("", "_blank");
 
-      // ✅ OPEN TAB FIRST (important)
-      const newTab = window.open("", "_blank");
+//   if (!newTab) {
+//     alert("Please allow popups for this site");
+//     return;
+//   }
 
-      if (!newTab) {
-        throw new Error("Popup blocked");
-      }
+//   try {
+//     const html = await getPaymentFormHtml(balance);
 
-      const html = await getPaymentFormHtml(balance);
+//     if (!html) throw new Error("Empty response");
 
-      if (!html) throw new Error("Empty response");
+//     newTab.document.open();
+//     newTab.document.write(html);
+//     newTab.document.close();
+//   } catch (err) {
+//     console.error(err);
 
-      // ✅ WRITE HTML INTO NEW TAB
-      newTab.document.open();
-      newTab.document.write(html);
-      newTab.document.close();
+//     // ❌ Close tab if failed
+//     newTab.close();
 
-      onClose(); // optional close modal
-    } catch (err) {
-      console.error(err);
-      setError("Unable to open payment page.");
-    } finally {
-      setLoading(false);
-    }
-  };
+//     alert("Payment loading failed");
+//   }
+// };
+
+
+const handleTopUpClick = async () => {
+  // ✅ OPEN TAB IMMEDIATELY (must be first line)
+  const newTab = window.open("", "_blank");
+
+  if (!newTab) {
+    alert("Please allow popups for this site");
+    return;
+  }
+
+  try {
+    const html = await getPaymentFormHtml(balance);
+
+    if (!html) throw new Error("Empty response");
+
+    newTab.document.open();
+    newTab.document.write(html);
+    newTab.document.close();
+  } catch (err) {
+    console.error(err);
+
+    newTab.close(); // close empty tab if failed
+    alert("Payment loading failed");
+  }
+};
 
   if (!open) return null;
 
@@ -514,7 +537,7 @@ export const TopUpModal: React.FC<Props> = ({
         )}
 
         <button
-          onClick={handleTopUp}
+          onClick={ handleTopUpClick }
           disabled={loading}
           className="w-full bg-[#1A3171] text-white py-3 rounded-lg"
         >
