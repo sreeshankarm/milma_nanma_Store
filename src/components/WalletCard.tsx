@@ -41,7 +41,7 @@ export default function WalletCard({ balance, onTopUp, allowTopUp }: Props) {
 
         {/* Tap to Top Up */}
         {allowTopUp && (
-          <div className="flex items-center gap-2 text-xs text-blue-300 transition-transform group-hover:translate-x-2">
+          <div className="flex items-center gap-2 text-xs text-blue-300 transition-transform group-hover:translate-x-2" onClick={allowTopUp ? onTopUp : undefined}>
             Tap to Top Up <ChevronRight size={12} />
           </div>
         )}
