@@ -449,7 +449,7 @@
 
 
 import { X } from "lucide-react";
-import { useState } from "react";
+// import { useState } from "react";
 import { getPaymentFormHtml } from "../api/payment.api";
 
 interface Props {
@@ -463,8 +463,8 @@ export const TopUpModal: React.FC<Props> = ({
   onClose,
   balance,
 }) => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  // const [loading, setLoading] = useState(false);
+  // const [error, setError] = useState("");
 
 // const handleTopUpClick = async () => {
 //   // ✅ OPEN TAB IMMEDIATELY (no await before this)
@@ -532,16 +532,16 @@ const handleTopUpClick = async () => {
           </button>
         </div>
 
-        {error && (
+        {/* {error && (
           <p className="text-red-500 text-sm mb-3">{error}</p>
-        )}
+        )} */}
 
         <button
           onClick={ handleTopUpClick }
-          disabled={loading}
+          // disabled={loading}
           className="w-full bg-[#1A3171] text-white py-3 rounded-lg"
         >
-          {loading ? "Processing..." : "Proceed to Payment"}
+          {/* {loading ? "Processing..." : "Proceed to Payment"} */}
         </button>
       </div>
     </div>

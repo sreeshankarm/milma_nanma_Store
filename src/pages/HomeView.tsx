@@ -10,7 +10,7 @@ import ProductModal from "../components/ProductModal";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { TopUpModal } from "../components/TopUpModal";
+// import { TopUpModal } from "../components/TopUpModal";
 import { useProduct } from "../context/product/useProduct";
 import type { Product } from "../types/product";
 import { useCart } from "../context/cart/useCart";
@@ -28,7 +28,7 @@ export const HomeView: React.FC = () => {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selected, setSelected] = useState<Product | null>(null);
-  const [showTopUp, setShowTopUp] = useState(false);
+  // const [showTopUp, setShowTopUp] = useState(false);
   const [activeGroup, setActiveGroup] = useState<number | null>(null);
 
   const getToday = () => {
