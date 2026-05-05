@@ -353,103 +353,8 @@
 
 
 
-// import { X } from "lucide-react";
-// import { useEffect, useState } from "react";
-// import { getPaymentFormHtml } from "../api/payment.api";
-
-// interface Props {
-//   open: boolean;
-//   onClose: () => void;
-//   balance: number;
-// }
-
-// export const TopUpModal: React.FC<Props> = ({
-//   open,
-//   onClose,
-//   balance,
-// }) => {
-//   const [html, setHtml] = useState("");
-//   const [loading, setLoading] = useState(false);
-//   const [error, setError] = useState("");
-
-//   const loadPayment = async () => {
-//     try {
-//       setLoading(true);
-//       setError("");
-
-//       const data = await getPaymentFormHtml(balance);
-
-//       if (!data) throw new Error("Empty response");
-
-//       setHtml(data);
-//     } catch (err) {
-//       console.error("Payment form error:", err);
-//       setError("Unable to load payment form.");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   useEffect(() => {
-//     if (open) loadPayment();
-//   }, [open]);
-
-//   if (!open) return null;
-
-//   return (
-//     // <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-//     <div className="fixed inset-0 z-50 bg-black/50 flex justify-center items-end sm:items-center">
-//       {/* <div className="bg-white w-full max-w-4xl h-[90vh] rounded-xl shadow-xl flex flex-col overflow-hidden"> */}
-//       <div className="bg-white w-full sm:max-w-4xl h-[95dvh] sm:h-[90vh] rounded-t-2xl sm:rounded-xl shadow-xl flex flex-col overflow-hidden">
-
-//         {/* Header */}
-//         <div className="flex justify-between items-center px-6 py-4 bg-[#8e2d26] text-white">
-//           <h2 className="font-semibold text-lg">Payment</h2>
-//           <button onClick={onClose} className="cursor-pointer">
-//             <X size={20} />
-//           </button>
-//         </div>
-
-//         {/* Body */}
-//         <div className="flex-1 relative">
-
-//           {loading && (
-//             <div className="absolute inset-0 flex items-center justify-center bg-white">
-//               <div className="w-8 h-8 border-4 border-[#8e2d26] border-t-transparent rounded-full animate-spin" />
-//             </div>
-//           )}
-
-//           {error && (
-//             <div className="flex flex-col items-center justify-center h-full gap-4 text-gray-600">
-//               <p>{error}</p>
-//               <button
-//                 onClick={loadPayment}
-//                 className="px-4 py-2 bg-blue-600 text-white rounded-lg"
-//               >
-//                 Retry
-//               </button>
-//             </div>
-//           )}
-
-//           {!loading && !error && html && (
-//             <iframe
-//               title="Payment Form"
-//               srcDoc={html}
-//               className="w-full h-full border-0"
-//               sandbox="allow-scripts allow-forms allow-same-origin allow-popups"
-//             />
-//           )}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-
-
-
 import { X } from "lucide-react";
-// import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getPaymentFormHtml } from "../api/payment.api";
 
 interface Props {
@@ -463,86 +368,78 @@ export const TopUpModal: React.FC<Props> = ({
   onClose,
   balance,
 }) => {
-  // const [loading, setLoading] = useState(false);
-  // const [error, setError] = useState("");
+  const [html, setHtml] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-// const handleTopUpClick = async () => {
-//   // ✅ OPEN TAB IMMEDIATELY (no await before this)
-//   const newTab = window.open("", "_blank");
+  const loadPayment = async () => {
+    try {
+      setLoading(true);
+      setError("");
 
-//   if (!newTab) {
-//     alert("Please allow popups for this site");
-//     return;
-//   }
+      const data = await getPaymentFormHtml(balance);
 
-//   try {
-//     const html = await getPaymentFormHtml(balance);
+      if (!data) throw new Error("Empty response");
 
-//     if (!html) throw new Error("Empty response");
+      setHtml(data);
+    } catch (err) {
+      console.error("Payment form error:", err);
+      setError("Unable to load payment form.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-//     newTab.document.open();
-//     newTab.document.write(html);
-//     newTab.document.close();
-//   } catch (err) {
-//     console.error(err);
-
-//     // ❌ Close tab if failed
-//     newTab.close();
-
-//     alert("Payment loading failed");
-//   }
-// };
-
-
-const handleTopUpClick = async () => {
-  // ✅ OPEN TAB IMMEDIATELY (must be first line)
-  const newTab = window.open("", "_blank");
-
-  if (!newTab) {
-    alert("Please allow popups for this site");
-    return;
-  }
-
-  try {
-    const html = await getPaymentFormHtml(balance);
-
-    if (!html) throw new Error("Empty response");
-
-    newTab.document.open();
-    newTab.document.write(html);
-    newTab.document.close();
-  } catch (err) {
-    console.error(err);
-
-    newTab.close(); // close empty tab if failed
-    alert("Payment loading failed");
-  }
-};
+  useEffect(() => {
+    if (open) loadPayment();
+  }, [open]);
 
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex justify-center items-center">
-      <div className="bg-white w-full max-w-md rounded-xl shadow-xl p-6">
+    // <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 z-50 bg-black/50 flex justify-center items-end sm:items-center">
+      {/* <div className="bg-white w-full max-w-4xl h-[90vh] rounded-xl shadow-xl flex flex-col overflow-hidden"> */}
+      <div className="bg-white w-full sm:max-w-4xl h-[95dvh] sm:h-[90vh] rounded-t-2xl sm:rounded-xl shadow-xl flex flex-col overflow-hidden">
 
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold">Top Up</h2>
-          <button onClick={onClose}>
+        {/* Header */}
+        <div className="flex justify-between items-center px-6 py-4 bg-[#8e2d26] text-white">
+          <h2 className="font-semibold text-lg">Payment</h2>
+          <button onClick={onClose} className="cursor-pointer">
             <X size={20} />
           </button>
         </div>
 
-        {/* {error && (
-          <p className="text-red-500 text-sm mb-3">{error}</p>
-        )} */}
+        {/* Body */}
+        <div className="flex-1 relative">
 
-        <button
-          onClick={ handleTopUpClick }
-          // disabled={loading}
-          className="w-full bg-[#1A3171] text-white py-3 rounded-lg"
-        >
-          {/* {loading ? "Processing..." : "Proceed to Payment"} */}
-        </button>
+          {loading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-white">
+              <div className="w-8 h-8 border-4 border-[#8e2d26] border-t-transparent rounded-full animate-spin" />
+            </div>
+          )}
+
+          {error && (
+            <div className="flex flex-col items-center justify-center h-full gap-4 text-gray-600">
+              <p>{error}</p>
+              <button
+                onClick={loadPayment}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+              >
+                Retry
+              </button>
+            </div>
+          )}
+
+          {!loading && !error && html && (
+            <iframe
+              title="Payment Form"
+              srcDoc={html}
+              className="w-full h-full border-0"
+              sandbox="allow-scripts allow-forms allow-same-origin allow-popups"
+            />
+          )}
+        </div>
       </div>
     </div>
   );

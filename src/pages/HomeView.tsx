@@ -10,7 +10,7 @@ import ProductModal from "../components/ProductModal";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-// import { TopUpModal } from "../components/TopUpModal";
+import { TopUpModal } from "../components/TopUpModal";
 import { useProduct } from "../context/product/useProduct";
 import type { Product } from "../types/product";
 import { useCart } from "../context/cart/useCart";
@@ -18,7 +18,6 @@ import { getSettingsApi } from "../api/settings.api";
 import { usePayment } from "../context/Payment/usePayment";
 import { useAuth } from "../context/auth/useAuth";
 import ProductSubGroupFilter from "../components/ProductSubGroupFilter";
-import { getPaymentFormHtml } from "../api";
 
 export const HomeView: React.FC = () => {
   const { products, loading, fetchProducts, productSubGroups } = useProduct();
@@ -28,7 +27,7 @@ export const HomeView: React.FC = () => {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selected, setSelected] = useState<Product | null>(null);
-  // const [showTopUp, setShowTopUp] = useState(false);
+  const [showTopUp, setShowTopUp] = useState(false);
   const [activeGroup, setActiveGroup] = useState<number | null>(null);
 
   const getToday = () => {
@@ -85,40 +84,13 @@ export const HomeView: React.FC = () => {
     loadSettings();
   }, []);
 
-
-  const handleTopUpClick = async () => {
-  // ✅ MUST be first (user click → open tab)
-  const newTab = window.open("", "_blank");
-
-  if (!newTab) {
-    alert("Please allow popups for this site");
-    return;
-  }
-
-  try {
-    const html = await getPaymentFormHtml(balance);
-
-    if (!html) throw new Error("Empty response");
-
-    newTab.document.open();
-    newTab.document.write(html);
-    newTab.document.close();
-  } catch (err) {
-    console.error("Payment error:", err);
-
-    newTab.close(); // close blank tab
-    alert("Unable to load payment page");
-  }
-};
-
   return (
     <div className="p-4 pb-28 space-y-8 animate-fade-in">
       {/* Wallet / Balance Card */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <WalletCard
           balance={balance}
-          onTopUp={handleTopUpClick}
-          // onTopUp={() => setShowTopUp(true)}
+          onTopUp={() => setShowTopUp(true)}
           allowTopUp={appAccess?.payment === 1}
         />
 
@@ -190,11 +162,11 @@ export const HomeView: React.FC = () => {
         </div>
       )}
 
-      {/* <TopUpModal
+      <TopUpModal
         open={showTopUp}
         onClose={() => setShowTopUp(false)}
         balance={balance}
-      /> */}
+      />
 
       {selected && (
         <ProductModal
