@@ -44,8 +44,22 @@ export const PaymentProvider = ({
         p_edate: end,
       });
 
+      // if (data && data.length > 0) {
+      //   setBalance(Number(data[0].balance ?? 0));
+      // }
       if (data && data.length > 0) {
-        setBalance(Number(data[0].balance ?? 0));
+        // ✅ Only calculate mgrp === 1
+        const totalCalculatedBalance = data.reduce(
+          (total: number, item: LedgerItem) => {
+            if (item.mgrp === 1) {
+              return total + Number(item.balance ?? 0);
+            }
+            return total;
+          },
+          0,
+        );
+
+        setBalance(totalCalculatedBalance);
       }
     } catch (error) {
       console.error("Ledger fetch failed", error);
@@ -66,8 +80,22 @@ export const PaymentProvider = ({
 
       setLedger(data || []);
 
+      // if (data && data.length > 0) {
+      //   setBalance(Number(data[0].balance ?? 0));
+      // }
       if (data && data.length > 0) {
-        setBalance(Number(data[0].balance ?? 0));
+        // ✅ Only calculate mgrp === 1
+        const totalCalculatedBalance = data.reduce(
+          (total: number, item: LedgerItem) => {
+            if (item.mgrp === 1) {
+              return total + Number(item.balance ?? 0);
+            }
+            return total;
+          },
+          0,
+        );
+
+        setBalance(totalCalculatedBalance);
       }
     } catch (error) {
       console.error("Ledger fetch failed", error);

@@ -161,11 +161,23 @@ export default function ReturnRequestsView() {
         // onSelect={(inv) => setSelectedInv(inv)}
         // onSelect={setSelectedInv}
         onSelect={(inv) => {
-          // if (!inv.delivery_status) return; // ❌ block modal
+          // ❌ Not delivered block modal
           if (!inv.delivery_status) {
             toast.warning("The invoice is not yet delivered");
             return;
           }
+
+          // ✅ Check if any item has acknowledgements
+          const hasAcknowledgements = inv.items.some(
+            (item) => (item.acknowledgements?.length ?? 0) > 0,
+          );
+
+          // ❌ Locked invoice + NO acknowledgements
+          if (inv.islocked === true && !hasAcknowledgements) {
+            toast.warning("This invoice return is locked.");
+            return; // ❌ modal will NOT open
+          }
+
           setSelectedInv(inv); // ✅ allow only delivered
         }}
       />

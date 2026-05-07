@@ -121,72 +121,7 @@ export default function TransactionsView() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {/* {bills.map((bill,index) => (
-              <div
-              
-                 key={`${bill.gid}-${index}`}
-                className="bg-white rounded-2xl shadow-sm border border-gray-300 p-4 hover:shadow-md transition flex flex-col justify-between"
-              >
-                <div>
-                  <div className="flex gap-3">
-                    <div className="w-10 h-10 bg-blue-100 flex items-center justify-center rounded-lg">
-                      <CreditCard size={18} className="text-blue-700" />
-                    </div>
-
-                    <div>
-                      <p className="font-semibold text-gray-900">
-                        {bill.prod_name}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        Inv: {bill.inv_no} • {bill.inv_date}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="border-t border-gray-300 my-4"></div>
-
-                  <div className="flex justify-between items-center bg-gray-50 px-3 py-2 rounded-lg">
-                    <p className="text-xs text-gray-500">Net Amount</p>
-
-                    <p className="text-lg font-bold text-[#0195db]">
-                      ₹{Number(bill.net_amt).toFixed(2)}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3 mt-4">
-                  <button
-                    onClick={() =>
-                      handleInvoice(String(bill.gid), bill.inv_date)
-                    }
-                    disabled={invoiceLoadingId === String(bill.gid)}
-                    className="h-11 rounded-xl border border-gray-300 flex items-center justify-center gap-2 hover:bg-gray-100 disabled:opacity-60"
-                  >
-                    {invoiceLoadingId === String(bill.gid) ? (
-                      <Loader2 className="animate-spin" size={16} />
-                    ) : (
-                      <FileText size={16} />
-                    )}
-                    Invoice
-                  </button>
-
-                  <button
-                    onClick={() =>
-                      handleReceipt(String(bill.gid), bill.inv_date)
-                    }
-                    disabled={receiptLoadingId === String(bill.gid)}
-                    className="h-11 rounded-xl bg-slate-600 text-white flex items-center justify-center gap-2 hover:bg-slate-700 disabled:opacity-60"
-                  >
-                    {receiptLoadingId === String(bill.gid) ? (
-                      <Loader2 className="animate-spin" size={16} />
-                    ) : (
-                      <Receipt size={16} />
-                    )}
-                    Receipt
-                  </button>
-                </div>
-              </div>
-            ))} */}
+   
 
             {bills.map((bill, index) => {
               const isLoading =

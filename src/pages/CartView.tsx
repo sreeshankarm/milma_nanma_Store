@@ -219,15 +219,14 @@ export default function CartView() {
                 </span>
               </div>
 
-              <p className="text-green-600 text-sm mt-1">
-                {/* You will have ₹{total} left after deduction */}
+              {/* <p className="text-green-600 text-sm mt-1">
                 You will have ₹
                 {formattedTotal.toLocaleString("en-IN", {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}{" "}
                 left after deduction
-              </p>
+              </p> */}
             </div>
           </div>
           {appAccess?.indent === 1 && (
