@@ -95,7 +95,7 @@ const InvoiceModal = ({ open, onClose }: Props) => {
       thin-scroll"
         >
           {/* LOGO */}
-          <div className="flex items-center gap-3 py-3 bg-gray-50 border border-gray-400 rounded-lg px-3 mb-3">
+          {/* <div className="flex items-center gap-3 py-3 bg-gray-50 border border-gray-400 rounded-lg px-3 mb-3">
             <img
               src="/nanma.png"
               alt="logo"
@@ -104,6 +104,17 @@ const InvoiceModal = ({ open, onClose }: Props) => {
             <div>
               <p className="font-semibold text-gray-800">Nanma Store</p>
               <p className="text-xs text-gray-500">Fresh Milk & Products</p>
+            </div>
+          </div> */}
+
+          {/* CENTER LOGO */}
+          <div className="flex justify-center items-center ">
+            <div className="bg-white">
+              <img
+                src="/nanma.png"
+                alt="logo"
+                className="w-15 h-15 object-contain"
+              />
             </div>
           </div>
 
@@ -132,10 +143,10 @@ const InvoiceModal = ({ open, onClose }: Props) => {
 
           {/* PRODUCTS */}
           <div className="space-y-3 pb-4">
-            {invoiceDetails.map((item,index) => (
+            {invoiceDetails.map((item, index) => (
               <div
                 // key={item.gid}
-                 key={`${item.gid}-${index}`}
+                key={`${item.gid}-${index}`}
                 className="border border-gray-400 rounded-xl p-3 bg-gray-50 flex justify-between items-center"
               >
                 <div>
@@ -147,7 +158,12 @@ const InvoiceModal = ({ open, onClose }: Props) => {
                   </p>
                 </div>
 
-                <p className="font-semibold text-[#0195db]">₹{Number(item.tot_amt).toLocaleString("en-IN", { minimumFractionDigits: 2 })}</p>
+                <p className="font-semibold text-[#0195db]">
+                  ₹
+                  {Number(item.tot_amt).toLocaleString("en-IN", {
+                    minimumFractionDigits: 2,
+                  })}
+                </p>
               </div>
             ))}
           </div>
@@ -190,7 +206,7 @@ const InvoiceModal = ({ open, onClose }: Props) => {
           )}
 
           {/* DOWNLOAD BUTTON */}
-   
+
           <button
             onClick={handleDownloadInvoice}
             disabled={downloading}

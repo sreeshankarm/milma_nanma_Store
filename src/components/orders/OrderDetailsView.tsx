@@ -156,7 +156,7 @@ const OrderDetailsView = () => {
       shadow-sm cursor-pointer"
           >
             <ArrowLeft size={16} />
-            Back to Orders
+            Back
           </button>
         </div>
         {hasItems && (
