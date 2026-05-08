@@ -78,25 +78,42 @@ export const PaymentProvider = ({
         p_edate: end,
       });
 
-      setLedger(data || []);
+      // setLedger(data || []);
 
       // if (data && data.length > 0) {
       //   setBalance(Number(data[0].balance ?? 0));
       // }
-      if (data && data.length > 0) {
-        // ✅ Only calculate mgrp === 1
-        const totalCalculatedBalance = data.reduce(
-          (total: number, item: LedgerItem) => {
-            if (item.mgrp === 1) {
-              return total + Number(item.balance ?? 0);
-            }
-            return total;
-          },
-          0,
-        );
+      // if (data && data.length > 0) {
+      //   // ✅ Only calculate mgrp === 1
+      //   const totalCalculatedBalance = data.reduce(
+      //     (total: number, item: LedgerItem) => {
+      //       if (item.mgrp === 1) {
+      //         return total + Number(item.balance ?? 0);
+      //       }
+      //       return total;
+      //     },
+      //     0,
+      //   );
 
-        setBalance(totalCalculatedBalance);
-      }
+      //   setBalance(totalCalculatedBalance);
+      // }
+
+      // ✅ Show only mgrp === 1 records
+      const filteredLedger = (data || []).filter(
+        (item: LedgerItem) => item.mgrp === 1,
+      );
+
+      setLedger(filteredLedger);
+
+      // ✅ Calculate total balance from mgrp === 1
+      const totalCalculatedBalance = filteredLedger.reduce(
+        (total: number, item: LedgerItem) => {
+          return total + Number(item.balance ?? 0);
+        },
+        0,
+      );
+
+      setBalance(totalCalculatedBalance);
     } catch (error) {
       console.error("Ledger fetch failed", error);
     } finally {
