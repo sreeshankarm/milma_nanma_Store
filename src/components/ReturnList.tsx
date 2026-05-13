@@ -39,9 +39,10 @@ const ReturnList: React.FC<Props> = ({ items, loading, onSelect }) => {
           0,
         );
 
-        // const hasAck = inv.items.some(
-        //   (item) => (item.acknowledgements?.length ?? 0) > 0,
-        // );
+        // ✅ Previous Returns check
+        const hasPreviousReturns = inv.items.some(
+          (item) => (item.acknowledgements?.length ?? 0) > 0,
+        );
 
         return (
           <div
@@ -77,9 +78,15 @@ const ReturnList: React.FC<Props> = ({ items, loading, onSelect }) => {
               //   ? "border-red-400 ring-1 ring-red-200 bg-red-50 "
               //   : "border-gray-200 hover:border-gray-300"
 
-              inv.delivery_status
-                ? "border-green-400 ring-1 ring-green-100"
-                : "border-gray-200 hover:border-gray-300"
+              // inv.delivery_status
+              //   ? "border-green-400 ring-1 ring-green-100"
+              //   : "border-gray-200 hover:border-gray-300"
+
+              inv.delivery_status && hasPreviousReturns
+                ? "border-2 border-orange-300 bg-orange-50/60 ring-1 ring-orange-100"
+                : inv.delivery_status
+                  ? "border-2 border-emerald-300 bg-emerald-50/50 ring-1 ring-emerald-100"
+                  : "border border-gray-200 hover:border-gray-300"
             }
           `}
           >
