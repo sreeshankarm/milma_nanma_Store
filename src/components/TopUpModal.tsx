@@ -368,47 +368,27 @@ export const TopUpModal: React.FC<Props> = ({
   onClose,
   balance,
 }) => {
-  const [html] = useState("");
+  const [html, setHtml] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error] = useState("");
-
-  // const loadPayment = async () => {
-  //   try {
-  //     setLoading(true);
-  //     setError("");
-
-  //     const data = await getPaymentFormHtml(balance);
-
-  //     if (!data) throw new Error("Empty response");
-
-  //     setHtml(data);
-  //   } catch (err) {
-  //     console.error("Payment form error:", err);
-  //     setError("Unable to load payment form.");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+  const [error, setError] = useState("");
 
   const loadPayment = async () => {
-  try {
-    setLoading(true);
+    try {
+      setLoading(true);
+      setError("");
 
-    const html = await getPaymentFormHtml(balance);
+      const data = await getPaymentFormHtml(balance);
 
-    const newTab = window.open("", "_blank");
+      if (!data) throw new Error("Empty response");
 
-    if (newTab) {
-      newTab.document.open();
-      newTab.document.write(html);
-      newTab.document.close();
+      setHtml(data);
+    } catch (err) {
+      console.error("Payment form error:", err);
+      setError("Unable to load payment form.");
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error(error);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   useEffect(() => {
     if (open) loadPayment();
