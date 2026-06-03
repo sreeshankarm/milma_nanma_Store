@@ -368,9 +368,9 @@ export const TopUpModal: React.FC<Props> = ({
   onClose,
   balance,
 }) => {
-  const [html, setHtml] = useState("");
+  const [html] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error] = useState("");
 
   // const loadPayment = async () => {
   //   try {
